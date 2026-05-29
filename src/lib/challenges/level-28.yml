@@ -1,0 +1,51 @@
+id: level-28
+title: Multiline Logs
+description: "Some logs span multiple lines (like stack traces or multi-line messages). Configure the `filelog` receiver to merge lines that start with a **timestamp pattern** (`^\\d{4}-\\d{2}-\\d{2}`) so each log entry is a complete block."
+difficulty: medium
+category: receiver-operators
+basePoints: 250
+
+inputLogs:
+  - "2024-01-15 INFO Order 12345"
+  - "  Status: pending"
+  - "  Items: 3"
+  - "2024-01-15 ERROR Connection timeout"
+  - "  Retry attempt 1/3"
+  - "  Backend: api.example.com"
+  - "2024-01-15 INFO Cache refreshed"
+  - "  Entries: 1500"
+
+expectedBodies:
+  - "2024-01-15 INFO Order 12345\n  Status: pending\n  Items: 3"
+  - "2024-01-15 ERROR Connection timeout\n  Retry attempt 1/3\n  Backend: api.example.com"
+  - "2024-01-15 INFO Cache refreshed\n  Entries: 1500"
+
+requiredProcessors: []
+
+hints:
+  - "Add `multiline` config to your `filelog` receiver"
+  - "Use `line_start_pattern` to match timestamp lines"
+  - "Pattern: `^\\d{4}-\\d{2}-\\d{2}` (lines starting with a date)"
+  - "Lines that don't match the pattern are appended to the previous entry"
+  - "No `json_parser` operator needed — we want the raw merged text"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      multiline:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}'

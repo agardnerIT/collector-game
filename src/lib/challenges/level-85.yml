@@ -1,0 +1,41 @@
+id: level-85
+title: Kubelet Stats
+description: "Collect metrics from a Kubernetes kubelet. Configure a **kubeletstats** receiver that connects to `http://kubelet:10250` using `serviceAccount` authentication."
+difficulty: hard
+category: metrics-receiver
+basePoints: 300
+
+inputLogs:
+  - '{"body":"k8s.pod.cpu.usage 0.5","attributes":{"metric":"kubelet","pod":"nginx-abc","node":"node1"}}'
+  - '{"body":"k8s.pod.memory.usage 256","attributes":{"metric":"kubelet","pod":"api-xyz","node":"node1"}}'
+  - '{"body":"k8s.node.disk.usage 60","attributes":{"metric":"kubelet","node":"node1"}}'
+
+expectedBodies:
+  - "k8s.pod.cpu.usage 0.5"
+  - "k8s.pod.memory.usage 256"
+  - "k8s.node.disk.usage 60"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `kubeletstats` receiver"
+  - "Set `endpoint` to the kubelet URL"
+  - "Set `auth_type` to `serviceAccount`"
+  - "Set `collection_interval` to `30s`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    kubeletstats:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [kubeletstats]
+        exporters: [file]
+
+solutionReceivers:
+  kubeletstats:
+    endpoint: http://kubelet:10250
+    auth_type: serviceAccount
+    collection_interval: 30s

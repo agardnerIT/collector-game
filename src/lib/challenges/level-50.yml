@@ -1,0 +1,37 @@
+id: level-50
+title: Webhook Endpoint
+description: "Configure a **webhookevent** receiver that listens for incoming webhooks at the `/events` endpoint on port `8080`."
+difficulty: easy
+category: receiver-config
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Webhook received","attributes":{"event":"push","repo":"CollectorGame"}}'
+  - '{"body":"Webhook received","attributes":{"event":"pull_request","repo":"OTel"}}'
+
+expectedBodies:
+  - "Webhook received"
+  - "Webhook received"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `webhookevent` receiver"
+  - "Set the `endpoint` to `0.0.0.0:8080`"
+  - "Set the `path` to `/events`"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    webhookevent:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [webhookevent]
+        exporters: [file]
+
+solutionReceivers:
+  webhookevent:
+    endpoint: 0.0.0.0:8080
+    path: /events

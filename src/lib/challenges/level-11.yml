@@ -1,0 +1,49 @@
+id: level-11
+title: Conditional Redaction
+description: "Redact `user.email` attributes, but **only** on log records with `level: info`. Error logs should keep their emails intact (for debugging). Use the **attributes** processor with `include` and `exclude` match types."
+difficulty: hard
+category: conditional
+basePoints: 400
+
+inputLogs:
+  - '{"body":"Profile viewed by another user","attributes":{"user.email":"alice@social.net","level":"info","viewer":"bob"}}'
+  - '{"body":"CRITICAL: database connection lost","attributes":{"user.email":"dba@ops.team","level":"error","db":"users-db"}}'
+  - '{"body":"Friend request accepted","attributes":{"user.email":"carol@friends.app","level":"info","from":"dave"}}'
+  - '{"body":"Authentication failure for admin panel","attributes":{"user.email":"admin@secure.io","level":"error","attempts":5}}'
+
+expectedBodies:
+  - Profile viewed by another user
+  - "CRITICAL: database connection lost"
+  - Friend request accepted
+  - Authentication failure for admin panel
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - Use the `include` match_type in the action config
+  - "Expression: `attributes[\"level\"] == \"info\"`"
+  - The action is still `delete` on key `user.email`
+  - Error logs (level != info) should keep their user.email attribute
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+        - key: user.email
+          action: delete
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: user.email
+        action: delete
+        include:
+          match_type: expr
+          expressions:
+            - 'attributes["level"] == "info"'

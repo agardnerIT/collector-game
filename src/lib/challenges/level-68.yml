@@ -1,0 +1,43 @@
+id: level-68
+title: Kafka Regex Topics
+description: "Consume from multiple Kafka topics using regex patterns. Configure a **kafka** receiver with a `topic_regex` pattern to match all topics starting with `app-logs-` and exclude topics matching `app-logs-ignore-`."
+difficulty: hard
+category: receiver-config
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Log from app-logs-web","attributes":{"level":"info"}}'
+  - '{"body":"Log from app-logs-worker","attributes":{"level":"warn"}}'
+  - '{"body":"Log from app-logs-db","attributes":{"level":"error"}}'
+
+expectedBodies:
+  - "Log from app-logs-web"
+  - "Log from app-logs-worker"
+  - "Log from app-logs-db"
+
+requiredProcessors: []
+
+hints:
+  - "Use `topic_regex` instead of a single `topic` for pattern matching"
+  - "Set `topic_regex` to `app-logs-.*` to match all app log topics"
+  - "Use `exclude_topics` to filter out specific matches"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [kafka]
+        exporters: [file]
+
+solutionReceivers:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic_regex: app-logs-.*
+    exclude_topics:
+      - app-logs-ignore-.*
+    encoding: raw

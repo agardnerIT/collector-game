@@ -1,0 +1,41 @@
+id: level-83
+title: Redis Metrics
+description: "Collect metrics from a Redis instance. Configure a **redis** receiver with endpoint `localhost:6379` to gather Redis performance and memory metrics."
+difficulty: medium
+category: metrics-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"redis.memory.used 2000000","attributes":{"metric":"redis","host":"localhost:6379"}}'
+  - '{"body":"redis.cpu.sys 12.5","attributes":{"metric":"redis","host":"localhost:6379"}}'
+  - '{"body":"redis.keyspace.hits 5000","attributes":{"metric":"redis","host":"localhost:6379"}}'
+
+expectedBodies:
+  - "redis.memory.used 2000000"
+  - "redis.cpu.sys 12.5"
+  - "redis.keyspace.hits 5000"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `redis` receiver"
+  - "Set `endpoint` to `localhost:6379`"
+  - "Optionally set `password` to empty string"
+  - "Set `collection_interval` to `10s`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    redis:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [redis]
+        exporters: [file]
+
+solutionReceivers:
+  redis:
+    endpoint: localhost:6379
+    password: ""
+    collection_interval: 10s

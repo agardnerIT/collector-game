@@ -1,0 +1,44 @@
+id: level-14
+title: Truncate It
+description: "Log bodies can get too long. Use the **transform** processor with `truncate_all` to limit each log body to **20 characters**."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"This is a very long log message that should be shortened","attributes":{"level":"info"}}'
+  - '{"body":"Short msg","attributes":{"level":"info"}}'
+  - '{"body":"Exactly 20 chars here!","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - "This is a very long l"
+  - "Short msg"
+  - "Exactly 20 chars her"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Use `truncate_all(body, 20)` to limit body length"
+  - "The first argument is the field to truncate, the second is the max length"
+  - "Make sure context is `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'truncate_all(body, 20)'

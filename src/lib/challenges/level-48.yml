@@ -1,0 +1,40 @@
+id: level-48
+title: Filter by Body
+description: "Use OTTL conditions with the **filter** processor to drop any log whose body contains the word `debug` (case-insensitive)."
+difficulty: medium
+category: filtering
+basePoints: 200
+
+inputLogs:
+  - '{"body":"User logged in successfully","attributes":{"level":"info"}}'
+  - '{"body":"Debug: cache miss for user 123","attributes":{"level":"debug"}}'
+  - '{"body":"Payment processed","attributes":{"level":"info"}}'
+  - '{"body":"debug mode enabled","attributes":{"level":"debug"}}'
+
+expectedBodies:
+  - "User logged in successfully"
+  - "Payment processed"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the **filter** processor with `log_conditions`"
+  - "Use `IsMatch(log.body, \"(?i)debug\")` to match case-insensitively"
+  - "Logs matching any condition are dropped"
+  - "Set `error_mode: ignore` to handle non-string bodies gracefully"
+
+starterYaml: |
+  processors:
+    filter:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    error_mode: ignore
+    log_conditions:
+      - IsMatch(log.body, "(?i)debug")

@@ -1,0 +1,46 @@
+id: level-79
+title: Scrape Endpoint
+description: "Scrape metrics from a Prometheus endpoint. Configure a **prometheus** receiver to scrape `http://localhost:9090/metrics`."
+difficulty: easy
+category: metrics-receiver
+basePoints: 120
+
+inputLogs:
+  - '{"body":"http_requests_total 100","attributes":{"job":"collector","instance":"localhost:9090"}}'
+  - '{"body":"http_requests_duration_ms 42","attributes":{"job":"collector","instance":"localhost:9090"}}'
+  - '{"body":"up 1","attributes":{"job":"collector","instance":"localhost:9090"}}'
+
+expectedBodies:
+  - "http_requests_total 100"
+  - "http_requests_duration_ms 42"
+  - "up 1"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `prometheus` receiver"
+  - "Add a `config` section with `scrape_configs`"
+  - "Set `job_name` to something descriptive"
+  - "Set `static_configs.targets` to the endpoint"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    prometheus:
+      config:
+        scrape_configs:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [prometheus]
+        exporters: [file]
+
+solutionReceivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: collector
+          static_configs:
+            - targets:
+                - localhost:9090

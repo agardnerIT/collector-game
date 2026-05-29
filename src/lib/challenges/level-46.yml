@@ -1,0 +1,42 @@
+id: level-46
+title: Limit Attributes
+description: "Some logs carry too many attributes. Use the **transform** processor with `limit` to cap attributes at **5** per log, keeping only the first ones."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Rich log entry","attributes":{"level":"info","service":"api","endpoint":"/users","method":"GET","status":"200","duration_ms":42,"env":"prod"}}'
+  - '{"body":"Simple log","attributes":{"level":"info","message":"done"}}'
+
+expectedBodies:
+  - "Rich log entry"
+  - "Simple log"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Use `limit(log.attributes, 5, [])`"
+  - "The `[]` means no priority attributes (they are all subject to the limit)"
+  - "Only the first 5 attributes survive"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'limit(log.attributes, 5, [])'

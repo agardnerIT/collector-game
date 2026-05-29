@@ -1,0 +1,44 @@
+id: level-13
+title: Replace Match
+description: "Some log attributes follow a pattern that needs rewriting. Use the **transform** processor with `replace_match` to change all `env` attributes that match `staging-*` to just `dev`."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Deploy to staging-us-1 finished","attributes":{"env":"staging-us-1","level":"info"}}'
+  - '{"body":"Deploy to staging-eu-2 finished","attributes":{"env":"staging-eu-2","level":"info"}}'
+  - '{"body":"Deploy to prod-east finished","attributes":{"env":"prod-east","level":"info"}}'
+
+expectedBodies:
+  - "Deploy to staging-us-1 finished"
+  - "Deploy to staging-eu-2 finished"
+  - "Deploy to prod-east finished"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Use `replace_match(attributes[\"env\"], \"staging-*\", \"dev\")`"
+  - "The first argument is the attribute to check, the second is the glob pattern, the third is the replacement"
+  - "Make sure context is `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'replace_match(attributes["env"], "staging-*", "dev")'

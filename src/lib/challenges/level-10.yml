@@ -1,0 +1,53 @@
+id: level-10
+title: Parse at the Edge
+description: "These logs arrive as raw strings in a structured format. Instead of processing them later with a `transform` processor, add a **regex_parser operator** directly in the `filelog` receiver to parse them as they're ingested.
+
+The format is: `<timestamp> <level> <message>`"
+difficulty: medium
+category: receiver-processing
+basePoints: 250
+
+inputLogs:
+  - "2024-01-15 INFO Server started on port 8080"
+  - "2024-01-15 ERROR Connection refused: timeout"
+  - "2024-01-15 WARN Disk usage at 85%"
+  - "2024-01-15 INFO User login from 10.0.0.5"
+
+expectedBodies:
+  - "2024-01-15 INFO Server started on port 8080"
+  - "2024-01-15 ERROR Connection refused: timeout"
+  - "2024-01-15 WARN Disk usage at 85%"
+  - "2024-01-15 INFO User login from 10.0.0.5"
+
+requiredProcessors: []
+
+hints:
+  - Add an `operators` list to your `filelog` receiver config
+  - Use the **regex_parser** operator type
+  - "Pattern: `^(?P<timestamp>\\S+) (?P<level>\\S+) (?P<message>.*)$`"
+  - "Set `parse_from: body` and `parse_to: attributes`"
+  - Since we're using operators, no `json_parser` is needed — each line is read as-is
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      operators:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    operators:
+      - type: regex_parser
+        regex: '^(?P<timestamp>\S+) (?P<level>\S+) (?P<message>.*)$'
+        parse_from: body
+        parse_to: attributes

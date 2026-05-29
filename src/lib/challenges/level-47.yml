@@ -1,0 +1,42 @@
+id: level-47
+title: Delete Matching
+description: "Remove all attributes matching a sensitive pattern. Use the **transform** processor with `delete_matching_keys` to remove any attributes with `token`, `secret`, or `password` in their key name."
+difficulty: medium
+category: pii-redaction
+basePoints: 200
+
+inputLogs:
+  - '{"body":"API request","attributes":{"level":"info","auth_token":"eyJhbGciOiJIUzI1NiJ9","api_key":"sk-abc123","endpoint":"/data","user.password":"supersecret"}}'
+  - '{"body":"API request","attributes":{"level":"info","endpoint":"/health","status":"ok"}}'
+
+expectedBodies:
+  - "API request"
+  - "API request"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Use `delete_matching_keys(log.attributes, \"(?i).*(token|secret|password).*\")`"
+  - "The `(?i)` makes it case-insensitive"
+  - "Any attribute with token, secret, or password in the key is removed"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'delete_matching_keys(log.attributes, "(?i).*(token|secret|password).*")'

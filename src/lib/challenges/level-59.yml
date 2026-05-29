@@ -1,0 +1,36 @@
+id: level-59
+title: Google Cloud Logging
+description: "Export logs to Google Cloud Logging. Configure a **googlecloud** exporter with the `project_id` set to `my-gcp-project`."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Log to export to GCP","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Another GCP log","attributes":{"level":"error","error_code":"E500"}}'
+
+expectedBodies:
+  - "Log to export to GCP"
+  - "Another GCP log"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `googlecloud` exporter"
+  - "Set `project_id` to `my-gcp-project`"
+  - "The googlecloud exporter sends logs to Google Cloud Logging"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    googlecloud:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [googlecloud]
+
+solutionExporters:
+  googlecloud:
+    project_id: my-gcp-project

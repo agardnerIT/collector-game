@@ -1,0 +1,40 @@
+id: level-71
+title: Group by Service
+description: "Group log records by `service.name` into separate resource scopes. Configure a **groupbyattrs** processor with `keys: [service.name]` to split logs into groups by service."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Request received","attributes":{"level":"info","service.name":"api","endpoint":"/users"}}'
+  - '{"body":"Query executed","attributes":{"level":"info","service.name":"db","query":"SELECT"}}'
+  - '{"body":"Response sent","attributes":{"level":"info","service.name":"api","status":200}}'
+
+expectedBodies:
+  - "Request received"
+  - "Query executed"
+  - "Response sent"
+
+requiredProcessors:
+  - groupbyattrs
+
+hints:
+  - "Use the **groupbyattrs** processor"
+  - "Set `keys` to include `service.name`"
+  - "This groups log records into separate resources by the specified attributes"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    groupbyattrs:
+      keys: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [groupbyattrs]
+
+solutionProcessors:
+  groupbyattrs:
+    keys:
+      - service.name

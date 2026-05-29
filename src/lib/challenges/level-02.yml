@@ -1,0 +1,46 @@
+id: level-02
+title: Blur the Cards
+description: The log bodies contain credit card numbers! Use the **transform** processor with OTTL's `replace_pattern` to replace any 16-digit number with `[REDACTED]`.
+difficulty: easy
+category: pii-redaction
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Payment processed: card 4532123456789012 charged $99.99","attributes":{"level":"info","merchant":"Acme Store"}}'
+  - '{"body":"Refund issued for card 5425234567890123 amount $25.00","attributes":{"level":"info","reason":"duplicate"}}'
+  - '{"body":"Card 378912345678901 declined - insufficient funds","attributes":{"level":"warn"}}'
+  - '{"body":"Subscription renewed: card 6011234567890123 $9.99/month","attributes":{"level":"info","plan":"premium"}}'
+
+expectedBodies:
+  - "Payment processed: card [REDACTED] charged $99.99"
+  - "Refund issued for card [REDACTED] amount $25.00"
+  - "Card [REDACTED] declined - insufficient funds"
+  - "Subscription renewed: card [REDACTED] $9.99/month"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Use `replace_pattern(body, regex, replacement)` OTTL function"
+  - "The regex should match 16 consecutive digits: `\\d{16}` (double-escape for YAML)"
+  - "Set the context to `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'replace_pattern(body, "\\d{16}", "[REDACTED]")'

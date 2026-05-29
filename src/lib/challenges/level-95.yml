@@ -1,0 +1,42 @@
+id: level-95
+title: Scale Values
+description: "Scale metric values by a factor using OTTL. Use the **transform** processor with `scale_metric(0.001)` to convert bytes to kilobytes."
+difficulty: medium
+category: metrics-ottl
+basePoints: 200
+
+inputLogs:
+  - '{"body":"network.bytes_sent 1024000","attributes":{"metric":"network.bytes_sent","unit":"bytes"}}'
+  - '{"body":"network.bytes_sent 2048000","attributes":{"metric":"network.bytes_sent","unit":"bytes"}}'
+
+expectedBodies:
+  - "network.bytes_sent 1024000"
+  - "network.bytes_sent 2048000"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `metric_statements`"
+  - "Use `scale_metric(0.001)` to divide all values by 1000"
+  - "This converts bytes to kilobytes"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    transform:
+      metric_statements:
+        - context: metric
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - scale_metric(0.001)

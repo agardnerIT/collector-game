@@ -1,0 +1,51 @@
+id: level-27
+title: Connector Bridge
+description: "Connectors let you bridge pipelines across telemetry signals. Configure a **count** connector that counts log records and generates metrics."
+difficulty: hard
+category: connectors
+basePoints: 500
+
+inputLogs:
+  - '{"body":"API request processed","attributes":{"level":"info","endpoint":"/users","status":200}}'
+  - '{"body":"API request processed","attributes":{"level":"info","endpoint":"/orders","status":201}}'
+  - '{"body":"API request processed","attributes":{"level":"info","endpoint":"/users","status":404}}'
+
+expectedBodies:
+  - "API request processed"
+  - "API request processed"
+  - "API request processed"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `connectors` section with a `count` connector"
+  - "The count connector matches logs by a condition and counts them"
+  - "It acts as both an exporter in the source pipeline and a receiver in the destination pipeline"
+  - "Configure it with `logs` section and a `metric_description`"
+  - "Add `connectors` to your `service.pipelines` to wire everything"
+
+starterYaml: |
+  connectors:
+    count:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [count, file]
+      logs/counts:
+        receivers: [count]
+        exporters: [file]
+
+solutionConnectors:
+  count:
+    logs:
+      metric_description: Count of log records by severity
+
+solutionPipelines:
+  logs:
+    receivers: [filelog]
+    exporters: [count, file]
+  logs/counts:
+    receivers: [count]
+    exporters: [file]

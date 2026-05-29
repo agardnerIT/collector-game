@@ -1,0 +1,41 @@
+id: level-63
+title: Splunk HEC Basic
+description: "Export logs to Splunk via HTTP Event Collector. Configure a **splunk_hec** exporter with token `abc123-token`, endpoint `https://splunk-instance:8088`, and sourcetype `otel_logs`."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"App started successfully","attributes":{"level":"info","env":"production"}}'
+  - '{"body":"User session created","attributes":{"level":"info","session_id":"sess_001"}}'
+  - '{"body":"Disk space warning","attributes":{"level":"warn","disk_usage_pct":85}}'
+
+expectedBodies:
+  - "App started successfully"
+  - "User session created"
+  - "Disk space warning"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `splunk_hec` exporter"
+  - "Set `token` to `abc123-token`"
+  - "Set `endpoint` to the Splunk HEC URL"
+  - "Set `sourcetype` to `otel_logs`"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    splunk_hec:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [splunk_hec]
+
+solutionExporters:
+  splunk_hec:
+    token: abc123-token
+    endpoint: https://splunk-instance:8088
+    sourcetype: otel_logs

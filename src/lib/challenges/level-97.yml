@@ -1,0 +1,39 @@
+id: level-97
+title: Compact Metrics
+description: "Merge duplicate metric Resource+Scope combinations. Configure a **groupbyattrs** processor with an empty `keys` list to trigger compaction mode for metrics."
+difficulty: hard
+category: metrics-processing
+basePoints: 300
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.5","attributes":{"metric":"cpu","host":"web-01"}}'
+  - '{"body":"cpu.utilization 0.3","attributes":{"metric":"cpu","host":"web-02"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory","host":"web-01"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.5"
+  - "cpu.utilization 0.3"
+  - "memory.usage 1000"
+
+requiredProcessors:
+  - groupbyattrs
+
+hints:
+  - "Use the **groupbyattrs** processor"
+  - "Leave `keys` as an empty list to enable compaction mode"
+  - "This merges data points sharing the same Resource+Scope"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    groupbyattrs:
+      keys: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [groupbyattrs]
+
+solutionProcessors:
+  groupbyattrs:
+    keys: []

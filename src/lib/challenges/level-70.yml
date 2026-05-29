@@ -1,0 +1,43 @@
+id: level-70
+title: Cloud Detection Chain
+description: "Chain multiple resource detectors with fallback. Configure a **resourcedetection** processor with detectors `env`, `gcp`, and `ec2` in order, setting `override: false` so earlier detectors take priority."
+difficulty: medium
+category: enrichment
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Starting in cloud environment","attributes":{"level":"info"}}'
+  - '{"body":"Fetching config from cloud","attributes":{"level":"info"}}'
+  - '{"body":"Cloud metadata refreshed","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - "Starting in cloud environment"
+  - "Fetching config from cloud"
+  - "Cloud metadata refreshed"
+
+requiredProcessors:
+  - resourcedetection
+
+hints:
+  - "Use the **resourcedetection** processor with multiple detectors"
+  - "List detectors in priority order: `env`, `gcp`, `ec2`"
+  - "Set `override: false` so earlier detectors have priority"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    resourcedetection:
+      detectors: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [resourcedetection]
+
+solutionProcessors:
+  resourcedetection:
+    detectors:
+      - env
+      - gcp
+      - ec2
+    override: false

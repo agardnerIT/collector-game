@@ -1,0 +1,39 @@
+id: level-72
+title: Compaction Mode
+description: "Merge duplicate Resource and Scope combinations. Configure a **groupbyattrs** processor with an empty `keys` list to trigger compaction mode, which merges log records sharing the same Resource+Scope into a single scope."
+difficulty: hard
+category: transformation
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Log entry A","attributes":{"level":"info","service.name":"api"}}'
+  - '{"body":"Log entry B","attributes":{"level":"info","service.name":"api"}}'
+  - '{"body":"Log entry C","attributes":{"level":"warn","service.name":"db"}}'
+
+expectedBodies:
+  - "Log entry A"
+  - "Log entry B"
+  - "Log entry C"
+
+requiredProcessors:
+  - groupbyattrs
+
+hints:
+  - "Use the **groupbyattrs** processor"
+  - "Leave `keys` as an empty list to enable compaction mode"
+  - "Compaction mode merges duplicate Resource+Scope combinations"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    groupbyattrs:
+      keys: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [groupbyattrs]
+
+solutionProcessors:
+  groupbyattrs:
+    keys: []

@@ -1,0 +1,36 @@
+id: level-60
+title: Azure Monitor
+description: "Export logs to Azure Monitor. Configure an **azuremonitor** exporter with an instrumentation key for authentication."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Log to export to Azure","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Azure export test","attributes":{"level":"warn","message":"performance degredation"}}'
+
+expectedBodies:
+  - "Log to export to Azure"
+  - "Azure export test"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with an `azuremonitor` exporter"
+  - "Set `instrumentation_key` to `abc-123-def-456`"
+  - "The azuremonitor exporter sends logs to Azure Monitor"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    azuremonitor:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [azuremonitor]
+
+solutionExporters:
+  azuremonitor:
+    instrumentation_key: abc-123-def-456

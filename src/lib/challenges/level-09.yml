@@ -1,0 +1,44 @@
+id: level-09
+title: Extract the Signal
+description: "Log bodies contain unstructured data: `IP: 10.0.1.42 | Status: 200 | Duration: 145ms`. Use the **transform** processor with `extract_patterns` to extract the IP and status code into structured attributes, then delete them from the body."
+difficulty: medium
+category: transformation
+basePoints: 300
+
+inputLogs:
+  - '{"body":"IP: 10.0.1.42 | Status: 200 | Duration: 45ms","attributes":{"level":"info"}}'
+  - '{"body":"IP: 172.16.0.8 | Status: 404 | Duration: 12ms","attributes":{"level":"info"}}'
+  - '{"body":"IP: 192.168.5.100 | Status: 500 | Duration: 3200ms","attributes":{"level":"error"}}'
+
+expectedBodies:
+  - "IP: 10.0.1.42 | Status: 200 | Duration: 45ms"
+  - "IP: 172.16.0.8 | Status: 404 | Duration: 12ms"
+  - "IP: 192.168.5.100 | Status: 500 | Duration: 3200ms"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - Use OTTL's `extract_patterns` function on the body
+  - "Pattern: `\"IP: (?P<ip>[^ |]+) \\| Status: (?P<status_code>[^ |]+)\"`"
+  - "Use `set` to assign extracted values to attributes"
+  - "Destination: `attributes[\"cache\"][\"ip\"]` and `attributes[\"cache\"][\"status_code\"]`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'extract_patterns(body, "IP: (?P<ip>[^ |]+) \\| Status: (?P<status_code>[^ |]+)")'

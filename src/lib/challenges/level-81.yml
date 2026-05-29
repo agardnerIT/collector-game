@@ -1,0 +1,50 @@
+id: level-81
+title: TLS Scrape
+description: "Scrape a Prometheus endpoint secured with TLS. Configure a **prometheus** receiver with `tls_config` using `insecure_skip_verify: true` to scrape `https://internal-metrics:9090/metrics`."
+difficulty: hard
+category: metrics-receiver
+basePoints: 300
+
+inputLogs:
+  - '{"body":"tls_metrics_total 200","attributes":{"job":"secure-app","instance":"internal-metrics:9090"}}'
+  - '{"body":"tls_scrape_duration 1.5","attributes":{"job":"secure-app","instance":"internal-metrics:9090"}}'
+
+expectedBodies:
+  - "tls_metrics_total 200"
+  - "tls_scrape_duration 1.5"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `prometheus` receiver with a scrape job targeting the HTTPS endpoint"
+  - "Add `scheme: https` to the scrape config"
+  - "Add `tls_config` with `insecure_skip_verify: true`"
+  - "Use `job_name: secure-app`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: secure-app
+            static_configs:
+              - targets: []
+
+  service:
+    pipelines:
+      logs:
+        receivers: [prometheus]
+        exporters: [file]
+
+solutionReceivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: secure-app
+          scheme: https
+          tls_config:
+            insecure_skip_verify: true
+          static_configs:
+            - targets:
+                - internal-metrics:9090

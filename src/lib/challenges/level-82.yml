@@ -1,0 +1,41 @@
+id: level-82
+title: MySQL Metrics
+description: "Collect metrics from a MySQL database. Configure a **mysql** receiver with endpoint `localhost:3306` and username `otel` to gather database performance metrics."
+difficulty: medium
+category: metrics-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"mysql.queries 1500","attributes":{"metric":"mysql","database":"app_db","user":"otel"}}'
+  - '{"body":"mysql.connections 25","attributes":{"metric":"mysql","state":"active"}}'
+  - '{"body":"mysql.innodb.row_locks 0","attributes":{"metric":"mysql","database":"app_db"}}'
+
+expectedBodies:
+  - "mysql.queries 1500"
+  - "mysql.connections 25"
+  - "mysql.innodb.row_locks 0"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `mysql` receiver"
+  - "Set `endpoint` to `localhost:3306`"
+  - "Set `username` to `otel`"
+  - "Set `password` to an empty string or placeholder"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    mysql:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [mysql]
+        exporters: [file]
+
+solutionReceivers:
+  mysql:
+    endpoint: localhost:3306
+    username: otel
+    password: ""

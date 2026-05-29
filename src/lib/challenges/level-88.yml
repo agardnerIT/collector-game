@@ -1,0 +1,36 @@
+id: level-88
+title: Convert to Delta
+description: "Convert cumulative metrics to delta metrics. Configure a **cumulativetodelta** processor to convert all incoming cumulative metrics to delta format."
+difficulty: easy
+category: metrics-processing
+basePoints: 120
+
+inputLogs:
+  - '{"body":"http_requests_total 100","attributes":{"metric":"http_requests_total","type":"cumulative"}}'
+  - '{"body":"http_requests_total 150","attributes":{"metric":"http_requests_total","type":"cumulative"}}'
+  - '{"body":"http_requests_total 220","attributes":{"metric":"http_requests_total","type":"cumulative"}}'
+
+expectedBodies:
+  - "http_requests_total 100"
+  - "http_requests_total 150"
+  - "http_requests_total 220"
+
+requiredProcessors:
+  - cumulativetodelta
+
+hints:
+  - "Use the **cumulativetodelta** processor"
+  - "No extra config needed — it converts all cumulative metrics by default"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    cumulativetodelta:
+
+  service:
+    pipelines:
+      logs:
+        processors: [cumulativetodelta]
+
+solutionProcessors:
+  cumulativetodelta:

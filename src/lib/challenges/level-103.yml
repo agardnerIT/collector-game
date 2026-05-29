@@ -1,0 +1,37 @@
+id: level-103
+title: Carbon Export
+description: "Send metrics to a Carbon (Graphite) backend. Configure a **carbon** exporter that pushes metrics to `carbon-server:2003` using the TCP protocol."
+difficulty: medium
+category: metrics-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"carbon.send 1","attributes":{"exporter":"carbon","endpoint":"carbon-server:2003"}}'
+  - '{"body":"carbon.send 2","attributes":{"exporter":"carbon","endpoint":"carbon-server:2003"}}'
+
+expectedBodies:
+  - "carbon.send 1"
+  - "carbon.send 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `carbon` exporter"
+  - "Set `endpoint` to the Carbon server address"
+  - "Set `transport` to `tcp`"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    carbon:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [carbon]
+
+solutionExporters:
+  carbon:
+    endpoint: carbon-server:2003
+    transport: tcp

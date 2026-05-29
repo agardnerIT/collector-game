@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-candy-pink: #ff6b9d;
+  --color-candy-orange: #ff8a50;
+  --color-candy-yellow: #ffd93d;
+  --color-candy-mint: #5de8a0;
+  --color-candy-purple: #c084fc;
+  --color-candy-blue: #67b8f7;
+  --color-candy-bg: #fdf2f8;
+  --font-sans: var(--font-nunito);
+  --font-mono: var(--font-geist-mono);
+  --radius-game: 1.5rem;
+}
+
+body {
+  background: var(--bg-body);
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-nunito);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+:root {
+  --bg-body: linear-gradient(135deg, #fdf2f8 0%, #fff7ed 25%, #fefce8 50%, #f0fdf4 75%, #fdf2f8 100%);
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-border: rgba(255, 255, 255, 0.6);
+  --bg-elevated: #ffffff;
+  --bg-code: #f9fafb;
+  --color-text: #4a3652;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --bg-scorebar: rgba(255, 255, 255, 0.8);
+  --bg-input: #f9fafb;
+  --border-default: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --bg-body: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 25%, #16213e 50%, #0d0d1a 75%, #0d0d1a 100%);
+  --bg-card: rgba(25, 25, 50, 0.88);
+  --bg-card-border: rgba(255, 255, 255, 0.06);
+  --bg-elevated: #1e1e3a;
+  --bg-code: #151528;
+  --color-text: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --bg-scorebar: rgba(13, 13, 26, 0.85);
+  --bg-input: #151528;
+  --border-default: rgba(255, 255, 255, 0.06);
+}
+
+/* Bouncy base for interactive elements */
+button, a {
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Game card style */
+.game-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-game);
+  border: 2px solid var(--bg-card-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+/* Sparkle animation for completed levels */
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Floaty background shapes */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(1deg); }
+  66% { transform: translateY(-6px) rotate(-1deg); }
+}
+
+.float-shape {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Bounce in */
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.1); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}
+
+/* Slide up */
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(255, 107, 157, 0.3); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(192, 132, 252, 0.4);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(192, 132, 252, 0.25);
+}

@@ -1,0 +1,40 @@
+id: level-31
+title: Block Values
+description: "Some attribute values contain sensitive data patterns. Configure the **redaction** processor to mask credit card numbers using a `blocked_values` regex pattern."
+difficulty: easy
+category: pii-redaction
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Payment by card","attributes":{"level":"info","card":"4532123456789012","holder":"John Doe"}}'
+  - '{"body":"Refund to card","attributes":{"level":"info","card":"5425234567890123","holder":"Jane Smith"}}'
+  - '{"body":"Normal log","attributes":{"level":"info","message":"Health check passed"}}'
+
+expectedBodies:
+  - "Payment by card"
+  - "Refund to card"
+  - "Normal log"
+
+requiredProcessors:
+  - redaction
+
+hints:
+  - "Use the **redaction** processor with `allow_all_keys: true`"
+  - "Add `blocked_values` with a regex matching 16-digit card numbers"
+  - "The regex: `\\d{16}`"
+  - "Matching values will be masked with asterisks"
+
+starterYaml: |
+  processors:
+    redaction:
+
+  service:
+    pipelines:
+      logs:
+        processors: [redaction]
+
+solutionProcessors:
+  redaction:
+    allow_all_keys: true
+    blocked_values:
+      - '\\d{16}'

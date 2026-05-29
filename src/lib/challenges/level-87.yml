@@ -1,0 +1,43 @@
+id: level-87
+title: Filter by Resource
+description: "Keep only metrics from production hosts. Configure a **filter** processor with a `metrics` section that includes metrics where the resource attribute `environment` equals `production`."
+difficulty: medium
+category: metrics-processing
+basePoints: 200
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.45","attributes":{"metric":"cpu","environment":"production"}}'
+  - '{"body":"cpu.utilization 0.30","attributes":{"metric":"cpu","environment":"staging"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory","environment":"production"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.45"
+  - "memory.usage 1000"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the **filter** processor with `metrics` section"
+  - "Use `include.match_type: strict`"
+  - "Add `resource_attributes` with key `environment` and value `production`"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    filter:
+      metrics:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    metrics:
+      include:
+        match_type: strict
+        resource_attributes:
+          - key: environment
+            value: production

@@ -1,0 +1,73 @@
+id: level-107
+title: Logs + Metrics
+description: "Run both logs and metrics pipelines in a single config. Configure a **filelog** receiver for logs and a **hostmetrics** receiver for metrics. Export logs to **file** and metrics to **prometheus**, each in its own pipeline."
+difficulty: hard
+category: metrics-pipeline
+basePoints: 500
+
+inputLogs:
+  - '{"body":"Log line 1","attributes":{"level":"info"}}'
+  - '{"body":"hostmetrics cpu 0.5","attributes":{"metric":"cpu"}}'
+  - '{"body":"Log line 2","attributes":{"level":"warn"}}'
+
+expectedBodies:
+  - "Log line 1"
+  - "hostmetrics cpu 0.5"
+  - "Log line 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add both `filelog` and `hostmetrics` receivers"
+  - "Add both `file` and `prometheus` exporters"
+  - "Create TWO pipelines under `service.pipelines`: one for logs, one for metrics"
+  - "Wire filelog→file in the logs pipeline"
+  - "Wire hostmetrics→prometheus in the metrics pipeline"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: []
+      start_at: beginning
+      operators:
+        - type: json_parser
+    hostmetrics:
+      scrapers:
+        cpu:
+
+  exporters:
+    file:
+      path: ./output.json
+    prometheus:
+
+  service:
+    pipelines:
+
+solutionReceivers:
+  filelog:
+    include:
+      - /tmp/input.log
+    start_at: beginning
+    operators:
+      - type: json_parser
+  hostmetrics:
+    scrapers:
+      cpu:
+
+solutionExporters:
+  file:
+    path: ./output.json
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+solutionPipelines:
+  logs:
+    receivers:
+      - filelog
+    exporters:
+      - file
+  metrics:
+    receivers:
+      - hostmetrics
+    exporters:
+      - prometheus

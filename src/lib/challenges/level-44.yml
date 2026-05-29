@@ -1,0 +1,44 @@
+id: level-44
+title: Match & Replace
+description: "Glob patterns are great for bulk attribute updates. Use the **transform** processor with `replace_all_matches` to change all routes matching `/user/*` to `/user/{id}` in the `http.route` attribute."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Request handled","attributes":{"level":"info","http.route":"/user/12345/profile","status":200}}'
+  - '{"body":"Request handled","attributes":{"level":"info","http.route":"/user/67890/settings","status":200}}'
+  - '{"body":"Request handled","attributes":{"level":"info","http.route":"/health","status":200}}'
+
+expectedBodies:
+  - "Request handled"
+  - "Request handled"
+  - "Request handled"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Use `replace_all_matches` on `log.attributes`"
+  - "The pattern `/user/*/` matches any user route"
+  - "Replacement: `/user/{id}/`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'replace_all_matches(log.attributes, "/user/*/*", "/user/{id}/{action}")'

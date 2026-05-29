@@ -1,0 +1,41 @@
+id: level-84
+title: HTTP Check
+description: "Monitor endpoint availability with HTTP checks. Configure an **httpcheck** receiver that pings `https://example.com` and `https://status.example.com` every 30 seconds."
+difficulty: easy
+category: metrics-receiver
+basePoints: 120
+
+inputLogs:
+  - '{"body":"httpcheck.status 1","attributes":{"target":"https://example.com","status":"up"}}'
+  - '{"body":"httpcheck.duration 0.3","attributes":{"target":"https://example.com"}}'
+  - '{"body":"httpcheck.status 1","attributes":{"target":"https://status.example.com","status":"up"}}'
+
+expectedBodies:
+  - "httpcheck.status 1"
+  - "httpcheck.duration 0.3"
+  - "httpcheck.status 1"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with an `httpcheck` receiver"
+  - "Set `targets` to a list of URLs to check"
+  - "Set `collection_interval` to `30s`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    httpcheck:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [httpcheck]
+        exporters: [file]
+
+solutionReceivers:
+  httpcheck:
+    targets:
+      - https://example.com
+      - https://status.example.com
+    collection_interval: 30s

@@ -1,0 +1,58 @@
+id: level-105
+title: Cumul.→Rate Pipe
+description: "Build a pipeline that converts cumulative metrics to deltas, then to rates. Configure `hostmetrics` → `cumulativetodelta` → `deltatorate` → `prometheus`."
+difficulty: medium
+category: metrics-pipeline
+basePoints: 250
+
+inputLogs:
+  - '{"body":"system.cpu.time 10000","attributes":{"metric":"system.cpu.time","type":"cumulative"}}'
+  - '{"body":"system.cpu.time 10500","attributes":{"metric":"system.cpu.time","type":"cumulative"}}'
+
+expectedBodies:
+  - "system.cpu.time 10000"
+  - "system.cpu.time 10500"
+
+requiredProcessors:
+  - cumulativetodelta
+  - deltatorate
+
+hints:
+  - "Add a `hostmetrics` receiver with `cpu` scraper"
+  - "Add **cumulativetodelta** processor first"
+  - "Add **deltatorate** processor second"
+  - "Add a **prometheus** exporter"
+  - "Wire them in order in the pipeline"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+        cpu:
+
+  processors:
+    cumulativetodelta:
+    deltatorate:
+
+  exporters:
+    prometheus:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        processors: []
+        exporters: [prometheus]
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      cpu:
+
+solutionProcessors:
+  cumulativetodelta:
+  deltatorate:
+
+solutionExporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889

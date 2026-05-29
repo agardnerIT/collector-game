@@ -1,0 +1,41 @@
+id: level-49
+title: Filter by Severity
+description: "Use OTTL conditions with the **filter** processor to drop all logs with severity below WARN (keeping only WARN, ERROR, and FATAL)."
+difficulty: medium
+category: filtering
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Cache hit","attributes":{"level":"debug"}}'
+  - '{"body":"Request received","attributes":{"level":"info"}}'
+  - '{"body":"High memory usage","attributes":{"level":"warn"}}'
+  - '{"body":"Connection refused","attributes":{"level":"error"}}'
+  - '{"body":"Operation completed","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - "High memory usage"
+  - "Connection refused"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the **filter** processor with `log_conditions`"
+  - "Filter by `log.severity_number` — INFO is 9, WARN is 13, ERROR is 17"
+  - "Use: `log.severity_number < SEVERITY_NUMBER_WARN`"
+  - "Logs matching the condition (less severe than WARN) are dropped"
+
+starterYaml: |
+  processors:
+    filter:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    error_mode: ignore
+    log_conditions:
+      - log.severity_number < SEVERITY_NUMBER_WARN

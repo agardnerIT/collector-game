@@ -1,0 +1,35 @@
+id: level-98
+title: Prometheus Export
+description: "Expose metrics on a Prometheus scrape endpoint. Configure a **prometheus** exporter that serves metrics on port `:8889`."
+difficulty: medium
+category: metrics-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"prometheus.scrape 1","attributes":{"exporter":"prometheus","port":8889}}'
+  - '{"body":"prometheus.scrape 2","attributes":{"exporter":"prometheus","port":8889}}'
+
+expectedBodies:
+  - "prometheus.scrape 1"
+  - "prometheus.scrape 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `prometheus` exporter"
+  - "Set `endpoint` to the address and port to listen on"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    prometheus:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [prometheus]
+
+solutionExporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889

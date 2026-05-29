@@ -1,0 +1,36 @@
+id: level-90
+title: Basic Rate
+description: "Convert delta metrics to rates. Configure a **deltatorate** processor to convert all incoming delta metrics to rate (per-second) values."
+difficulty: medium
+category: metrics-processing
+basePoints: 200
+
+inputLogs:
+  - '{"body":"network.packets 1000","attributes":{"metric":"network.packets","type":"delta"}}'
+  - '{"body":"network.packets 1200","attributes":{"metric":"network.packets","type":"delta"}}'
+  - '{"body":"network.packets 900","attributes":{"metric":"network.packets","type":"delta"}}'
+
+expectedBodies:
+  - "network.packets 1000"
+  - "network.packets 1200"
+  - "network.packets 900"
+
+requiredProcessors:
+  - deltatorate
+
+hints:
+  - "Use the **deltatorate** processor"
+  - "No extra config needed for basic rate conversion"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    deltatorate:
+
+  service:
+    pipelines:
+      logs:
+        processors: [deltatorate]
+
+solutionProcessors:
+  deltatorate:

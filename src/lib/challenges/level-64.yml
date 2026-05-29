@@ -1,0 +1,43 @@
+id: level-64
+title: Splunk HEC Routing
+description: "Route logs to different Splunk indices based on attributes. Configure **splunk_hec** with `otel_attrs_to_hec_metadata` to map `environment` attribute to the Splunk index field, and set a default `index` of `main`."
+difficulty: hard
+category: exporter-config
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Deploy started","attributes":{"level":"info","environment":"production","service":"api"}}'
+  - '{"body":"Debug metric collected","attributes":{"level":"debug","environment":"staging","service":"api"}}'
+  - '{"body":"Error in payment flow","attributes":{"level":"error","environment":"production","error_code":"E402"}}'
+
+expectedBodies:
+  - "Deploy started"
+  - "Debug metric collected"
+  - "Error in payment flow"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `splunk_hec` exporter with `token`, `endpoint`, and `sourcetype`"
+  - "Add `otel_attrs_to_hec_metadata` and list `environment` as a key"
+  - "Set a default `index` for logs without mapped attributes"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    splunk_hec:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [splunk_hec]
+
+solutionExporters:
+  splunk_hec:
+    token: abc123-token
+    endpoint: https://splunk-instance:8088
+    sourcetype: otel_logs
+    index: main
+    otel_attrs_to_hec_metadata:
+      - environment

@@ -1,0 +1,36 @@
+id: level-91
+title: Custom Rate
+description: "Convert deltas to rates with a custom label. Configure a **deltatorate** processor that adds a `host` label to the output rate metrics using `addition_label: host`."
+difficulty: hard
+category: metrics-processing
+basePoints: 300
+
+inputLogs:
+  - '{"body":"disk.io.ops 500","attributes":{"metric":"disk.io.ops","type":"delta","host":"server01"}}'
+  - '{"body":"disk.io.ops 550","attributes":{"metric":"disk.io.ops","type":"delta","host":"server01"}}'
+
+expectedBodies:
+  - "disk.io.ops 500"
+  - "disk.io.ops 550"
+
+requiredProcessors:
+  - deltatorate
+
+hints:
+  - "Use the **deltatorate** processor"
+  - "Set `addition_label` to `host` to copy the host attribute into the rate metric"
+  - "Optionally set a custom rate calculation"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    deltatorate:
+
+  service:
+    pipelines:
+      logs:
+        processors: [deltatorate]
+
+solutionProcessors:
+  deltatorate:
+    addition_label: host

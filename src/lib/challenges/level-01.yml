@@ -1,0 +1,42 @@
+id: level-01
+title: Bye Bye Emails
+description: The log lines below contain user email addresses in the attributes. Write an OpenTelemetry Collector config to **delete** all `user.email` attributes from the telemetry before it's exported.
+difficulty: easy
+category: pii-redaction
+basePoints: 100
+
+inputLogs:
+  - '{"body":"User logged in successfully","attributes":{"user.email":"john.doe@company.com","level":"info"}}'
+  - '{"body":"Password reset requested","attributes":{"user.email":"jane.smith@example.org","level":"warn","ip":"192.168.1.1"}}'
+  - '{"body":"Account created","attributes":{"user.email":"alice@startup.io","level":"info","plan":"pro"}}'
+  - '{"body":"Payment failed","attributes":{"user.email":"bob@corp.net","level":"error","amount":49.99}}'
+
+expectedBodies:
+  - User logged in successfully
+  - Password reset requested
+  - Account created
+  - Payment failed
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - Use the [attributes](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/attributesprocessor/README.md) processor
+  - The action should be `delete`
+  - The key to target is `user.email`
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: user.email
+        action: delete

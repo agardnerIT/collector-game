@@ -1,0 +1,45 @@
+id: level-29
+title: JSON in the Wild
+description: "Some log bodies contain embedded JSON strings that need to be parsed into structured attributes. Use the **transform** processor with OTTL's `parse_json` to extract the JSON fields from the body."
+difficulty: medium
+category: transformation
+basePoints: 250
+
+inputLogs:
+  - '{"body":"{\"event\": \"login\", \"user_id\": 12345, \"ip\": \"10.0.0.1\"}","attributes":{"level":"info"}}'
+  - '{"body":"{\"event\": \"purchase\", \"amount\": 49.99, \"currency\": \"USD\"}","attributes":{"level":"info"}}'
+  - '{"body":"{\"event\": \"error\", \"code\": \"E403\", \"resource\": \"/api/admin\"}","attributes":{"level":"warn"}}'
+
+expectedBodies:
+  - '{"event": "login", "user_id": 12345, "ip": "10.0.0.1"}'
+  - '{"event": "purchase", "amount": 49.99, "currency": "USD"}'
+  - '{"event": "error", "code": "E403", "resource": "/api/admin"}'
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Use `parse_json(body)` to parse the body as JSON"
+  - "Set the parsed result to a new `parsed` attribute"
+  - "Example: `set(attributes[\"parsed\"], parse_json(body))`"
+  - "Make sure context is `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'set(attributes["parsed"], parse_json(body))'

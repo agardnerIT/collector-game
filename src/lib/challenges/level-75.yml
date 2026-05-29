@@ -1,0 +1,40 @@
+id: level-75
+title: CPU Usage
+description: "Collect CPU metrics from the host machine. Configure a **hostmetrics** receiver with a `cpu` scraper to collect CPU utilization metrics."
+difficulty: easy
+category: metrics-receiver
+basePoints: 120
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.45","attributes":{"metric":"cpu","state":"user","host":"localhost"}}'
+  - '{"body":"cpu.utilization 0.30","attributes":{"metric":"cpu","state":"system","host":"localhost"}}'
+  - '{"body":"cpu.utilization 0.25","attributes":{"metric":"cpu","state":"idle","host":"localhost"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.45"
+  - "cpu.utilization 0.30"
+  - "cpu.utilization 0.25"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `hostmetrics` receiver"
+  - "Set `collection_interval` to `30s` (or leave default)"
+  - "Add a `scrapers` section with `cpu` enabled"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [file]
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      cpu:

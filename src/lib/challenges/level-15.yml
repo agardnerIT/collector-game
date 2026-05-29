@@ -1,0 +1,44 @@
+id: level-15
+title: Split the Tags
+description: "Some logs have tags as a comma-separated string in attributes. Use the **transform** processor with OTTL's `Split` function to convert them into an array and store it in a new `tags_array` attribute."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Order placed","attributes":{"tags":"urgent,high-priority,international","level":"info"}}'
+  - '{"body":"Refund processed","attributes":{"tags":"finance,urgent","level":"info"}}'
+  - '{"body":"User login","attributes":{"tags":"standard","level":"info"}}'
+
+expectedBodies:
+  - "Order placed"
+  - "Refund processed"
+  - "User login"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Split the `tags` attribute on `,` using `Split(attributes[\"tags\"], \",\")`"
+  - "Set the result to a new attribute `tags_array`"
+  - "Example: `set(attributes[\"tags_array\"], Split(attributes[\"tags\"], \",\"))`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'set(attributes["tags_array"], Split(attributes["tags"], ","))'

@@ -1,0 +1,38 @@
+id: level-06
+title: Show Your Work
+description: "You've configured receivers and processors — now where does the data go? Configure a **debug exporter** so the Collector prints telemetry to the console. Set `verbosity: detailed` to see the full output."
+difficulty: easy
+category: exporter-config
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Rate limit exceeded","attributes":{"level":"warn","client_id":"abc-123"}}'
+  - '{"body":"Cache flushed","attributes":{"level":"info","entries":2048}}'
+
+expectedBodies:
+  - Health check passed
+  - Rate limit exceeded
+  - Cache flushed
+
+requiredProcessors: []
+
+hints:
+  - Add an `exporters` section to your config
+  - Use the **debug** exporter type (it prints to stdout)
+  - "Set `verbosity: detailed` to see the full telemetry data"
+  - Wire it in `service.pipelines.logs.exporters`
+
+starterYaml: |
+  exporters:
+    debug:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [debug]
+
+solutionExporters:
+  debug:
+    verbosity: detailed

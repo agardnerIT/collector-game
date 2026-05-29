@@ -1,0 +1,41 @@
+id: level-92
+title: Rename Metric
+description: "Rename a metric using OTTL. Use the **transform** processor with a `metric_statements` context to rename `old.metric.name` to `new.metric.name`."
+difficulty: easy
+category: metrics-ottl
+basePoints: 120
+
+inputLogs:
+  - '{"body":"old.metric.name 42","attributes":{"metric":"old.metric.name"}}'
+  - '{"body":"old.metric.name 15","attributes":{"metric":"old.metric.name"}}'
+
+expectedBodies:
+  - "old.metric.name 42"
+  - "old.metric.name 15"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with a `metric_statements` section"
+  - "Use `set(metric.name, \"new.metric.name\")` to rename"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    transform:
+      metric_statements:
+        - context: metric
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - 'set(metric.name, "new.metric.name")'

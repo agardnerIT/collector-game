@@ -1,0 +1,41 @@
+id: level-07
+title: Hash It Out
+description: Instead of deleting PII, let's **hash** it. Use the `attributes` processor to hash the `user.email` attribute — it should still be there but look like `[REDACTED]`.
+difficulty: medium
+category: pii-redaction
+basePoints: 200
+
+inputLogs:
+  - '{"body":"User profile updated","attributes":{"user.email":"ceo@bigcorp.com","user.id":"usr_001","level":"info"}}'
+  - '{"body":"Login from new device","attributes":{"user.email":"dev@startup.io","user.id":"usr_002","level":"warn","device":"iPhone 15"}}'
+  - '{"body":"Email verification sent","attributes":{"user.email":"support@helpdesk.org","user.id":"usr_003","level":"info"}}'
+
+expectedBodies:
+  - User profile updated
+  - Login from new device
+  - Email verification sent
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - Use the `attributes` processor — same as Level 1, different action
+  - The action should be `hash` (not `delete`)
+  - The key is still `user.email`
+  - Hashing truncates the value to a short hash string
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: user.email
+        action: hash

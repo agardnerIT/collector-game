@@ -1,0 +1,39 @@
+id: level-19
+title: Memory Guardian
+description: "The Collector should protect itself from running out of memory. Configure the **memory_limiter** processor to check every **5 seconds** and enforce a hard limit of **512 MiB**."
+difficulty: easy
+category: performance
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Processing large log file","attributes":{"level":"info","file":"access.log","size_mb":250}}'
+  - '{"body":"Memory pressure detected","attributes":{"level":"warn","heap_mib":480}}'
+  - '{"body":"Normal operation","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - "Processing large log file"
+  - "Memory pressure detected"
+  - "Normal operation"
+
+requiredProcessors:
+  - memory_limiter
+
+hints:
+  - "Add a `memory_limiter` processor to the `processors` section"
+  - "Set `check_interval` to `5s`"
+  - "Set `limit_mib` to `512`"
+  - "The memory_limiter drops or slows down logs when memory is exceeded"
+
+starterYaml: |
+  processors:
+    memory_limiter:
+
+  service:
+    pipelines:
+      logs:
+        processors: [memory_limiter]
+
+solutionProcessors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512

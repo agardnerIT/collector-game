@@ -1,0 +1,38 @@
+id: level-101
+title: Custom Headers
+description: "Authenticate remote write requests with custom HTTP headers. Configure a **prometheusremotewrite** exporter that adds an `Authorization: Bearer my-token-123` header."
+difficulty: hard
+category: metrics-exporter
+basePoints: 300
+
+inputLogs:
+  - '{"body":"auth.write 1","attributes":{"exporter":"prometheusremotewrite","auth":"bearer"}}'
+  - '{"body":"auth.write 2","attributes":{"exporter":"prometheusremotewrite","auth":"bearer"}}'
+
+expectedBodies:
+  - "auth.write 1"
+  - "auth.write 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `prometheusremotewrite` exporter with `endpoint`"
+  - "Add a `headers` section with the Authorization header"
+  - "Set `Authorization` to `Bearer my-token-123`"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    prometheusremotewrite:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [prometheusremotewrite]
+
+solutionExporters:
+  prometheusremotewrite:
+    endpoint: http://cortex:9009/api/v1/push
+    headers:
+      Authorization: Bearer my-token-123

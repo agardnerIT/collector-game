@@ -1,0 +1,42 @@
+id: level-17
+title: Flatten the Nest
+description: "Some logs have nested attributes that are hard to query. Use the **transform** processor with OTTL's `flatten` function to flatten the `metadata` attribute, using `.` as the separator."
+difficulty: medium
+category: transformation
+basePoints: 250
+
+inputLogs:
+  - '{"body":"Request from mobile client","attributes":{"metadata":{"ip":"10.0.0.1","location":{"city":"Brisbane","country":"AU"}},"level":"info"}}'
+  - '{"body":"API call from partner","attributes":{"metadata":{"ip":"192.168.1.1","location":{"city":"Sydney","country":"AU"},"partner":"acme"},"level":"info"}}'
+
+expectedBodies:
+  - "Request from mobile client"
+  - "API call from partner"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `log_statements`"
+  - "Use `flatten(attributes[\"metadata\"], \".\")`"
+  - "This turns nested keys like `location.city` into top-level keys under `metadata`"
+  - "Make sure context is `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'flatten(attributes["metadata"], ".")'

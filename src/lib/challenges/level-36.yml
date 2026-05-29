@@ -1,0 +1,42 @@
+id: level-36
+title: Dedup by Fields
+description: "Sometimes only specific fields matter for deduplication. Configure the **log_dedup** processor to match logs only on their `error_code` attribute."
+difficulty: medium
+category: performance
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Request failed","attributes":{"level":"error","error_code":"E500","request_id":"abc-001","user":"alice"}}'
+  - '{"body":"Request failed","attributes":{"level":"error","error_code":"E500","request_id":"def-002","user":"bob"}}'
+  - '{"body":"Request failed","attributes":{"level":"error","error_code":"E403","request_id":"ghi-003","user":"admin"}}'
+  - '{"body":"Request failed","attributes":{"level":"error","error_code":"E500","request_id":"jkl-004","user":"carol"}}'
+
+expectedBodies:
+  - "Request failed"
+  - "Request failed"
+  - "Request failed"
+  - "Request failed"
+
+requiredProcessors:
+  - log_dedup
+
+hints:
+  - "Use the **log_dedup** processor with an `interval`"
+  - "Set `include_fields` to only match on `error_code`"
+  - "Logs with the same error_code will be deduplicated regardless of other differences"
+  - "Use field path syntax: `attributes.error_code`"
+
+starterYaml: |
+  processors:
+    log_dedup:
+
+  service:
+    pipelines:
+      logs:
+        processors: [log_dedup]
+
+solutionProcessors:
+  log_dedup:
+    interval: 30s
+    include_fields:
+      - attributes.error_code

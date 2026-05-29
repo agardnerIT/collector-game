@@ -1,0 +1,43 @@
+id: level-34
+title: Database Sanitizer
+description: "Database queries in logs can contain sensitive literal values. Configure the **redaction** processor with `db_sanitizer` to redact SQL values from `db.statement` attributes."
+difficulty: hard
+category: pii-redaction
+basePoints: 300
+
+inputLogs:
+  - "{\"body\":\"Query executed\",\"attributes\":{\"level\":\"info\",\"db.statement\":\"SELECT * FROM users WHERE email = 'test@test.com' AND password = 'secret123'\",\"db.system\":\"postgresql\"}}"
+  - "{\"body\":\"Query executed\",\"attributes\":{\"level\":\"info\",\"db.statement\":\"INSERT INTO orders (user_id, amount) VALUES (42, 99.95)\",\"db.system\":\"mysql\"}}"
+  - '{"body":"Cache miss","attributes":{"level":"debug","message":"no cache entry"}}'
+
+expectedBodies:
+  - "Query executed"
+  - "Query executed"
+  - "Cache miss"
+
+requiredProcessors:
+  - redaction
+
+hints:
+  - "Use the **redaction** processor with `allow_all_keys: true`"
+  - "Add a `db_sanitizer` section with `sql.enabled: true`"
+  - 'Set `sql.attributes` to `["db.statement"]`'
+  - "The sanitizer replaces literal values in SQL with placeholders"
+
+starterYaml: |
+  processors:
+    redaction:
+
+  service:
+    pipelines:
+      logs:
+        processors: [redaction]
+
+solutionProcessors:
+  redaction:
+    allow_all_keys: true
+    db_sanitizer:
+      sql:
+        enabled: true
+        attributes:
+          - db.statement

@@ -1,0 +1,42 @@
+id: level-32
+title: URL Sanitizer
+description: "URLs in logs often contain high-cardinality data like user IDs. Configure the **redaction** processor with `url_sanitizer` to clean sensitive path segments from `http.url` attributes."
+difficulty: medium
+category: pii-redaction
+basePoints: 200
+
+inputLogs:
+  - '{"body":"API call","attributes":{"level":"info","http.url":"https://api.example.com/users/12345/profile","status":200}}'
+  - '{"body":"API call","attributes":{"level":"info","http.url":"https://api.example.com/users/67890/profile","status":404}}'
+  - '{"body":"API call","attributes":{"level":"info","http.url":"https://api.example.com/health","status":200}}'
+
+expectedBodies:
+  - "API call"
+  - "API call"
+  - "API call"
+
+requiredProcessors:
+  - redaction
+
+hints:
+  - "Use the **redaction** processor with `allow_all_keys: true`"
+  - "Add a `url_sanitizer` section with `enabled: true`"
+  - "Set `attributes` to `[\"http.url\"]`"
+  - "The sanitizer removes UUIDs, timestamps, and numeric IDs from URLs"
+
+starterYaml: |
+  processors:
+    redaction:
+
+  service:
+    pipelines:
+      logs:
+        processors: [redaction]
+
+solutionProcessors:
+  redaction:
+    allow_all_keys: true
+    url_sanitizer:
+      enabled: true
+      attributes:
+        - http.url

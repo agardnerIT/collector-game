@@ -1,0 +1,42 @@
+id: level-45
+title: Keep Matching
+description: "Keep only attributes matching a regex pattern. Use the **transform** processor with `keep_matching_keys` to preserve only attributes starting with `k8s.`."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Pod scheduled","attributes":{"level":"info","k8s.pod.name":"web-1","k8s.namespace.name":"production","app.version":"1.0.0","environment":"prod"}}'
+  - '{"body":"Pod scheduled","attributes":{"level":"info","k8s.pod.name":"worker-1","k8s.namespace.name":"staging","team":"backend"}}'
+
+expectedBodies:
+  - "Pod scheduled"
+  - "Pod scheduled"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Use `keep_matching_keys(log.attributes, \"k8s.*\")`"
+  - "Only attributes with keys starting with `k8s.` survive"
+  - "The `level` attribute is also kept by default in the pipeline"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'keep_matching_keys(log.attributes, "k8s.*")'

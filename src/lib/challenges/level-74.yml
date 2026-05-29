@@ -1,0 +1,42 @@
+id: level-74
+title: Priority Sampling
+description: "Keep critical logs at full fidelity while sampling the rest. Configure a **probabilistic_sampler** processor with `sampling_percentage: 10` that also checks for `sampling_priority` attribute — logs with `sampling_priority >= 5` should always be kept."
+difficulty: hard
+category: performance
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Routine health check","attributes":{"level":"info","sampling_priority":1}}'
+  - '{"body":"Critical payment failure","attributes":{"level":"error","sampling_priority":10,"error_code":"E500"}}'
+  - '{"body":"Debug trace log","attributes":{"level":"debug","sampling_priority":2}}'
+  - '{"body":"Security alert","attributes":{"level":"warn","sampling_priority":8,"alert":"unauthorized_access"}}'
+
+expectedBodies:
+  - "Routine health check"
+  - "Critical payment failure"
+  - "Debug trace log"
+  - "Security alert"
+
+requiredProcessors:
+  - probabilistic_sampler
+
+hints:
+  - "Use the **probabilistic_sampler** processor"
+  - "Set `sampling_percentage` to 10 for base sampling rate"
+  - "Use `sampling_priority` to keep high-value logs regardless of percentage"
+  - "Set a threshold value for `sampling_priority` to bypass sampling"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    probabilistic_sampler:
+
+  service:
+    pipelines:
+      logs:
+        processors: [probabilistic_sampler]
+
+solutionProcessors:
+  probabilistic_sampler:
+    sampling_percentage: 10
+    sampling_priority: 5

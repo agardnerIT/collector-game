@@ -1,0 +1,39 @@
+id: level-16
+title: Keep the Essentials
+description: "These logs carry many attributes but we only care about the `level`. Use the **attributes** processor to **keep** only that attribute and drop everything else."
+difficulty: easy
+category: pii-redaction
+basePoints: 120
+
+inputLogs:
+  - '{"body":"User profile updated","attributes":{"user.email":"test@test.com","user.id":"usr_001","level":"info","ip":"10.0.0.1"}}'
+  - '{"body":"Payment processed","attributes":{"user.email":"buyer@shop.com","amount":49.99,"level":"info","currency":"USD"}}'
+  - '{"body":"Login from new device","attributes":{"user.email":"dev@startup.io","level":"warn","device":"iPhone"}}'
+
+expectedBodies:
+  - "User profile updated"
+  - "Payment processed"
+  - "Login from new device"
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "Use the `attributes` processor"
+  - "Set `keep_keys` to only keep the `level` attribute"
+  - "This is not an action — it's a top-level setting on the processor"
+  - "All other attributes will be dropped automatically"
+
+starterYaml: |
+  processors:
+    attributes:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    keep_keys:
+      - level

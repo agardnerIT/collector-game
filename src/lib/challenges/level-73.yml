@@ -1,0 +1,40 @@
+id: level-73
+title: Sample Logs by Percentage
+description: "Reduce log volume by sampling. Configure a **probabilistic_sampler** processor to sample 25% of all log records using `sampling_percentage: 25`."
+difficulty: medium
+category: performance
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Keep or drop? Entry 1","attributes":{"level":"info"}}'
+  - '{"body":"Keep or drop? Entry 2","attributes":{"level":"info"}}'
+  - '{"body":"Keep or drop? Entry 3","attributes":{"level":"info"}}'
+  - '{"body":"Keep or drop? Entry 4","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - "Keep or drop? Entry 1"
+  - "Keep or drop? Entry 2"
+  - "Keep or drop? Entry 3"
+  - "Keep or drop? Entry 4"
+
+requiredProcessors:
+  - probabilistic_sampler
+
+hints:
+  - "Use the **probabilistic_sampler** processor"
+  - "Set `sampling_percentage` to 25 for ~25% sampling rate"
+  - "The sampler uses a hash-based algorithm for consistent decisions"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    probabilistic_sampler:
+
+  service:
+    pipelines:
+      logs:
+        processors: [probabilistic_sampler]
+
+solutionProcessors:
+  probabilistic_sampler:
+    sampling_percentage: 25

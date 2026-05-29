@@ -1,0 +1,44 @@
+id: level-43
+title: Concat Fields
+description: "Combine multiple attributes into one. Use the **transform** processor with `Concat` to join `first_name` and `last_name` into a single `full_name` attribute, separated by a space."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"User registered","attributes":{"level":"info","first_name":"John","last_name":"Doe"}}'
+  - '{"body":"User registered","attributes":{"level":"info","first_name":"Jane","last_name":"Smith"}}'
+  - '{"body":"User registered","attributes":{"level":"info","first_name":"Alice","last_name":"Johnson"}}'
+
+expectedBodies:
+  - "User registered"
+  - "User registered"
+  - "User registered"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Use `Concat` to join two strings with a delimiter"
+  - "Syntax: `Concat([log.attributes[\"first_name\"], log.attributes[\"last_name\"]], \" \")`"
+  - "Set the result to `log.attributes[\"full_name\"]` with `set()`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'set(log.attributes["full_name"], Concat([log.attributes["first_name"], log.attributes["last_name"]], " "))'

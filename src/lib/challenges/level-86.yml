@@ -1,0 +1,42 @@
+id: level-86
+title: Filter by Name
+description: "Keep only CPU metrics. Configure a **filter** processor with a `metrics` section that includes metrics matching `cpu.*` and drops everything else."
+difficulty: easy
+category: metrics-processing
+basePoints: 120
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.45","attributes":{"metric":"cpu.utilization"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory.usage"}}'
+  - '{"body":"cpu.time 2000","attributes":{"metric":"cpu.time"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.45"
+  - "cpu.time 2000"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the **filter** processor with a `metrics` section"
+  - "Set `include.match_type: regexp`"
+  - "Use `metric_names: [cpu.*]` to match CPU metrics"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    filter:
+      metrics:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    metrics:
+      include:
+        match_type: regexp
+        metric_names:
+          - cpu.*

@@ -1,0 +1,41 @@
+id: level-30
+title: Allow List
+description: "Only keep safe attributes. Configure the **redaction** processor to allow only `level`, `message`, and `timestamp` attributes — everything else should be removed."
+difficulty: easy
+category: pii-redaction
+basePoints: 120
+
+inputLogs:
+  - '{"body":"User logged in","attributes":{"level":"info","user.email":"user@test.com","user.ip":"10.0.0.1","message":"login success","timestamp":"2024-01-15T10:00:00Z"}}'
+  - '{"body":"Payment processed","attributes":{"level":"info","credit_card":"4111111111111111","message":"payment ok","timestamp":"2024-01-15T10:01:00Z","user.email":"buyer@shop.com"}}'
+  - '{"body":"Error occurred","attributes":{"level":"error","message":"db timeout","timestamp":"2024-01-15T10:02:00Z","stack_trace":"java.lang.NullPointerException","user.id":"usr_001"}}'
+
+expectedBodies:
+  - "User logged in"
+  - "Payment processed"
+  - "Error occurred"
+
+requiredProcessors:
+  - redaction
+
+hints:
+  - "Use the **redaction** processor"
+  - "Set `allowed_keys` to a list of attribute names to keep"
+  - "Only `level`, `message`, and `timestamp` should survive"
+  - "Set `allow_all_keys` to `false` (default) so unlisted keys are dropped"
+
+starterYaml: |
+  processors:
+    redaction:
+
+  service:
+    pipelines:
+      logs:
+        processors: [redaction]
+
+solutionProcessors:
+  redaction:
+    allowed_keys:
+      - level
+      - message
+      - timestamp

@@ -1,0 +1,40 @@
+id: level-35
+title: Silent Repetition
+description: "Some logs repeat frequently and waste storage. Configure the **log_dedup** processor to aggregate identical logs over a **30 second** interval, emitting only one log with a count."
+difficulty: easy
+category: performance
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Database query slow","attributes":{"level":"warn","query_time_ms":1500}}'
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+
+expectedBodies:
+  - "Health check passed"
+  - "Database query slow"
+  - "Health check passed"
+
+requiredProcessors:
+  - log_dedup
+
+hints:
+  - "Add a `log_dedup` processor to the `processors` section"
+  - "Set `interval` to `30s` to aggregate logs over 30 seconds"
+  - "Identical logs (same body + attributes) are deduplicated"
+  - "The count of deduplicated logs is added as an attribute"
+
+starterYaml: |
+  processors:
+    log_dedup:
+
+  service:
+    pipelines:
+      logs:
+        processors: [log_dedup]
+
+solutionProcessors:
+  log_dedup:
+    interval: 30s

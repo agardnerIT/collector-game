@@ -1,0 +1,42 @@
+id: level-39
+title: Upsert It
+description: "Use the **attributes** processor with `upsert` to set a `datacenter` attribute to `us-east-1`, overwriting any existing value."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Node joined cluster","attributes":{"level":"info","node":"node-1","datacenter":"us-west-2"}}'
+  - '{"body":"Node joined cluster","attributes":{"level":"info","node":"node-2"}}'
+  - '{"body":"Node joined cluster","attributes":{"level":"info","node":"node-3","datacenter":"eu-west-1"}}'
+
+expectedBodies:
+  - "Node joined cluster"
+  - "Node joined cluster"
+  - "Node joined cluster"
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "Use the **attributes** processor with `actions`"
+  - "Action `upsert` creates or overwrites the attribute"
+  - "Key: `datacenter`, Value: `us-east-1`"
+  - "All logs should end up with `datacenter: us-east-1`"
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: datacenter
+        value: us-east-1
+        action: upsert

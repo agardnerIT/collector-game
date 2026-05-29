@@ -1,0 +1,43 @@
+id: level-51
+title: Rate Limited Webhook
+description: "Protect your webhook receiver from overload. Add a **rate_limit** to the `webhookevent` receiver, allowing a maximum of **100 requests per second**."
+difficulty: medium
+category: receiver-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Webhook received","attributes":{"event":"push","repo":"CollectorGame"}}'
+  - '{"body":"Webhook received","attributes":{"event":"issue","repo":"OTel"}}'
+
+expectedBodies:
+  - "Webhook received"
+  - "Webhook received"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `webhookevent` receiver"
+  - "Add a `rate_limit` section inside the receiver config"
+  - "Set `hits_per_second` to `100`"
+  - "Set `enabled: true`"
+
+starterYaml: |
+  receivers:
+    webhookevent:
+      endpoint: 0.0.0.0:8080
+      path: /events
+      rate_limit:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [webhookevent]
+        exporters: [file]
+
+solutionReceivers:
+  webhookevent:
+    endpoint: 0.0.0.0:8080
+    path: /events
+    rate_limit:
+      enabled: true
+      hits_per_second: 100

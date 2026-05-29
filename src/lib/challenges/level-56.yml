@@ -1,0 +1,52 @@
+id: level-56
+title: Severity Parse
+description: "Extract severity from raw log lines. Configure a `regex_parser` operator in the `filelog` receiver that parses the severity level from the log body."
+difficulty: medium
+category: receiver-operators
+basePoints: 250
+
+inputLogs:
+  - "ERROR Database connection failed"
+  - "INFO Health check passed"
+  - "WARN Memory usage at 85%"
+  - "DEBUG Cache miss for key user:42"
+
+expectedBodies:
+  - "ERROR Database connection failed"
+  - "INFO Health check passed"
+  - "WARN Memory usage at 85%"
+  - "DEBUG Cache miss for key user:42"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `regex_parser` operator to the `filelog` receiver"
+  - "Pattern: `^(?P<sev>\\w+) (?P<msg>.*)$`"
+  - "Add a `severity` config with `parse_from: attributes.sev`"
+  - "The severity mapping: INFO->info, WARN->warn, ERROR->error, DEBUG->debug"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      operators:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    operators:
+      - type: regex_parser
+        regex: '^(?P<sev>\w+) (?P<msg>.*)$'
+        parse_from: body
+        parse_to: attributes
+        severity:
+          parse_from: attributes.sev

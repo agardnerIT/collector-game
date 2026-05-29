@@ -1,0 +1,43 @@
+id: level-37
+title: Conditional Dedup
+description: "Only deduplicate logs that match certain conditions. Configure the **log_dedup** processor to only aggregate logs with severity `ERROR` using an OTTL condition."
+difficulty: medium
+category: performance
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Disk space low","attributes":{"level":"warn","disk_pct":85}}'
+  - '{"body":"Connection timeout","attributes":{"level":"error","service":"db"}}'
+  - '{"body":"Connection timeout","attributes":{"level":"error","service":"db"}}'
+  - '{"body":"Disk space low","attributes":{"level":"warn","disk_pct":87}}'
+  - '{"body":"Connection timeout","attributes":{"level":"error","service":"db"}}'
+
+expectedBodies:
+  - "Disk space low"
+  - "Connection timeout"
+  - "Disk space low"
+  - "Connection timeout"
+
+requiredProcessors:
+  - log_dedup
+
+hints:
+  - "Use the **log_dedup** processor"
+  - "Add a `conditions` list with an OTTL expression"
+  - "Use `log.attributes[\"level\"] == \"error\"` to only dedup ERROR logs"
+  - "WARN and other logs pass through without deduplication"
+
+starterYaml: |
+  processors:
+    log_dedup:
+
+  service:
+    pipelines:
+      logs:
+        processors: [log_dedup]
+
+solutionProcessors:
+  log_dedup:
+    interval: 30s
+    conditions:
+      - 'log.attributes["level"] == "error"'

@@ -1,0 +1,42 @@
+id: level-94
+title: Keep Attributes
+description: "Keep only specific data point attributes. Use the **transform** processor to call `keep_keys(data_point.attributes, [\"host\", \"dc\"])` so only `host` and `dc` attributes survive."
+difficulty: medium
+category: metrics-ottl
+basePoints: 200
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.5","attributes":{"metric":"cpu","host":"web-1","dc":"us-east","env":"prod","version":"1.0"}}'
+  - '{"body":"memory.usage 500","attributes":{"metric":"mem","host":"web-1","dc":"us-east","env":"prod","version":"1.0"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.5"
+  - "memory.usage 500"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with a `metric_statements` context"
+  - "Use `keep_keys(data_point.attributes, [\"host\", \"dc\"])`"
+  - "This drops all attributes except the listed ones"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    transform:
+      metric_statements:
+        - context: metric
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - 'keep_keys(data_point.attributes, ["host", "dc"])'

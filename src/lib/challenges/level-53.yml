@@ -1,0 +1,35 @@
+id: level-53
+title: OTLP File Read
+description: "Sometimes telemetry arrives as OTLP JSON files. Configure an **otlpjsonfilereceiver** to read logs from `/var/log/otlp/logs.json`."
+difficulty: easy
+category: receiver-config
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Telemetry ingested from file","attributes":{"source":"otlp-json","level":"info"}}'
+
+expectedBodies:
+  - "Telemetry ingested from file"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with an `otlpjsonfile` receiver"
+  - "Set `include` to the path of the OTLP JSON file"
+  - "Set `start_at: beginning`"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    otlpjsonfile:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlpjsonfile]
+        exporters: [file]
+
+solutionReceivers:
+  otlpjsonfile:
+    include: /var/log/otlp/logs.json
+    start_at: beginning

@@ -1,0 +1,61 @@
+id: level-104
+title: Full Pipeline
+description: "Build a complete metric pipeline. Configure a pipeline that collects `hostmetrics`, filters to only CPU metrics, and exports them via **prometheus**. Use the **filter** processor with `include: [cpu.*]`."
+difficulty: medium
+category: metrics-pipeline
+basePoints: 250
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.5","attributes":{"metric":"cpu.utilization"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory.usage"}}'
+  - '{"body":"cpu.time 5000","attributes":{"metric":"cpu.time"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.5"
+  - "cpu.time 5000"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Add `hostmetrics` receiver with CPU scraper"
+  - "Add a **filter** processor that includes only CPU metrics"
+  - "Add a **prometheus** exporter on `:8889`"
+  - "Wire all three together in the pipeline"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+        cpu:
+
+  processors:
+    filter:
+      metrics:
+
+  exporters:
+    prometheus:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        processors: [filter]
+        exporters: [prometheus]
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      cpu:
+
+solutionProcessors:
+  filter:
+    metrics:
+      include:
+        match_type: regexp
+        metric_names:
+          - cpu.*
+
+solutionExporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889

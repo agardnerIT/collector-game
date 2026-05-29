@@ -1,0 +1,44 @@
+id: level-61
+title: Kafka Send Logs
+description: "Ship logs to Apache Kafka. Configure a **kafka** exporter that sends logs to `kafka-broker:9092` on the `logs-topic` topic using `otlp_proto` encoding."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"User login event","attributes":{"level":"info","user_id":42}}'
+  - '{"body":"Order placed","attributes":{"level":"info","order_id":"ORD-12345","amount":99.95}}'
+  - '{"body":"Payment timeout","attributes":{"level":"error","error_code":"TIMEOUT"}}'
+
+expectedBodies:
+  - "User login event"
+  - "Order placed"
+  - "Payment timeout"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `kafka` exporter"
+  - "Set `brokers` to a list containing `kafka-broker:9092`"
+  - "Set `topic` to `logs-topic`"
+  - "Set `encoding` to `otlp_proto`"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    kafka:
+      brokers: []
+      topic:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [kafka]
+
+solutionExporters:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: logs-topic
+    encoding: otlp_proto

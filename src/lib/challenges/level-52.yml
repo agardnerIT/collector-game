@@ -1,0 +1,41 @@
+id: level-52
+title: Authenticated Webhook
+description: "Secure your webhook endpoint. Configure a `webhookevent` receiver with `auth` to require a Bearer token `Bearer my-secret-token` in incoming requests."
+difficulty: medium
+category: receiver-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Authenticated webhook received","attributes":{"event":"push","repo":"CollectorGame"}}'
+
+expectedBodies:
+  - "Authenticated webhook received"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `auth` section to the `webhookevent` receiver"
+  - "Set `type` to `bearer`"
+  - "Set `token` to `my-secret-token`"
+  - "Only requests with the correct Bearer token will be accepted"
+
+starterYaml: |
+  receivers:
+    webhookevent:
+      endpoint: 0.0.0.0:8080
+      path: /events
+      auth:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [webhookevent]
+        exporters: [file]
+
+solutionReceivers:
+  webhookevent:
+    endpoint: 0.0.0.0:8080
+    path: /events
+    auth:
+      type: bearer
+      token: my-secret-token

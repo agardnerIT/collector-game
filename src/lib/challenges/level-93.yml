@@ -1,0 +1,41 @@
+id: level-93
+title: Set Description
+description: "Add a custom description to a metric. Use the **transform** processor to set `metric.description` to `\"Custom metric description\"`."
+difficulty: easy
+category: metrics-ottl
+basePoints: 120
+
+inputLogs:
+  - '{"body":"my.metric 100","attributes":{"metric":"my.metric"}}'
+  - '{"body":"my.metric 200","attributes":{"metric":"my.metric"}}'
+
+expectedBodies:
+  - "my.metric 100"
+  - "my.metric 200"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `metric_statements`"
+  - "Use `set(metric.description, \"description text\")`"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    transform:
+      metric_statements:
+        - context: metric
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - 'set(metric.description, "Custom metric description")'

@@ -1,0 +1,35 @@
+id: level-100
+title: Remote Write
+description: "Send metrics to a remote Prometheus-compatible backend. Configure a **prometheusremotewrite** exporter that pushes metrics to `http://cortex:9009/api/v1/push`."
+difficulty: medium
+category: metrics-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"remote.write.success 1","attributes":{"exporter":"prometheusremotewrite","endpoint":"cortex:9009"}}'
+  - '{"body":"remote.write.latency 0.5","attributes":{"exporter":"prometheusremotewrite","endpoint":"cortex:9009"}}'
+
+expectedBodies:
+  - "remote.write.success 1"
+  - "remote.write.latency 0.5"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `prometheusremotewrite` exporter"
+  - "Set `endpoint` to the remote write URL"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    prometheusremotewrite:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [prometheusremotewrite]
+
+solutionExporters:
+  prometheusremotewrite:
+    endpoint: http://cortex:9009/api/v1/push

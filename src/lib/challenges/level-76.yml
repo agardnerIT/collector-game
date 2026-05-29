@@ -1,0 +1,40 @@
+id: level-76
+title: Disk Metrics
+description: "Collect disk and filesystem metrics. Configure a **hostmetrics** receiver with `disk` and `filesystem` scrapers to monitor disk I/O and usage."
+difficulty: easy
+category: metrics-receiver
+basePoints: 120
+
+inputLogs:
+  - '{"body":"disk.io 1024","attributes":{"metric":"disk","device":"sda","direction":"write"}}'
+  - '{"body":"disk.usage 50000","attributes":{"metric":"filesystem","device":"sda1","state":"used"}}'
+  - '{"body":"disk.usage 100000","attributes":{"metric":"filesystem","device":"sda1","state":"free"}}'
+
+expectedBodies:
+  - "disk.io 1024"
+  - "disk.usage 50000"
+  - "disk.usage 100000"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `hostmetrics` receiver with a `scrapers` section"
+  - "Enable both `disk` and `filesystem` scrapers"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [file]
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      disk:
+      filesystem:

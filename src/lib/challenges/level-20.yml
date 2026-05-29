@@ -1,0 +1,39 @@
+id: level-20
+title: Cloud Detect
+description: "Enrich your telemetry with cloud metadata using the **resourcedetection** processor. Configure it to detect the environment using `env`, `gcp`, and `ecs` detectors (in that order)."
+difficulty: medium
+category: enrichment
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Service started","attributes":{"service":"api-gateway","level":"info"}}'
+  - '{"body":"Health check passed","attributes":{"service":"auth-service","level":"info"}}'
+
+expectedBodies:
+  - "Service started"
+  - "Health check passed"
+
+requiredProcessors:
+  - resourcedetection
+
+hints:
+  - "Add a `resourcedetection` processor to the `processors` section"
+  - "Set `detectors` to a list of environment detectors"
+  - "Available detectors: `env`, `gcp`, `ecs`, `ec2`, `azure`"
+  - "The processor adds cloud metadata as resource attributes"
+
+starterYaml: |
+  processors:
+    resourcedetection:
+
+  service:
+    pipelines:
+      logs:
+        processors: [resourcedetection]
+
+solutionProcessors:
+  resourcedetection:
+    detectors:
+      - env
+      - gcp
+      - ecs

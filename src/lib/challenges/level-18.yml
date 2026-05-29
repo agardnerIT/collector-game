@@ -1,0 +1,39 @@
+id: level-18
+title: Batch & Burst
+description: "When processing high-volume logs, batching improves efficiency. Configure the **batch** processor to send batches every **5 seconds** or when **1024** log records are queued, whichever comes first."
+difficulty: easy
+category: performance
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Request processed","attributes":{"level":"info","latency_ms":42}}'
+  - '{"body":"Cache refreshed","attributes":{"level":"info","entries":1500}}'
+  - '{"body":"Connection pool full","attributes":{"level":"warn","pool_size":100}}'
+
+expectedBodies:
+  - "Request processed"
+  - "Cache refreshed"
+  - "Connection pool full"
+
+requiredProcessors:
+  - batch
+
+hints:
+  - "Add a `batch` processor to the `processors` section"
+  - "Set `timeout` to `5s` (how long to wait before sending)"
+  - "Set `send_batch_size` to `1024` (max logs per batch)"
+  - "The batch processor doesn't change log content — it only affects delivery"
+
+starterYaml: |
+  processors:
+    batch:
+
+  service:
+    pipelines:
+      logs:
+        processors: [batch]
+
+solutionProcessors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024

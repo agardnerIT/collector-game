@@ -1,0 +1,39 @@
+id: level-65
+title: Elasticsearch Logs
+description: "Export logs to Elasticsearch. Configure an **elasticsearch** exporter with endpoint `https://es-cluster:9200` and API key authentication (`api_key: base64encodedkey==`)."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Index created","attributes":{"level":"info","index":"users"}}'
+  - '{"body":"Search query executed","attributes":{"level":"info","took_ms":15}}'
+  - '{"body":"Shard allocation failed","attributes":{"level":"error","shard_id":3}}'
+
+expectedBodies:
+  - "Index created"
+  - "Search query executed"
+  - "Shard allocation failed"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with an `elasticsearch` exporter"
+  - "Set `endpoint` to the Elasticsearch cluster URL"
+  - "Set `api_key` for authentication"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    elasticsearch:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [elasticsearch]
+
+solutionExporters:
+  elasticsearch:
+    endpoint: https://es-cluster:9200
+    api_key: base64encodedkey==

@@ -1,0 +1,54 @@
+id: level-106
+title: Dual Export
+description: "Send metrics to two backends simultaneously. Configure a pipeline that collects `hostmetrics` and exports to both **prometheus** (`:8889`) and **influxdb** (`http://influxdb:8086`)."
+difficulty: hard
+category: metrics-pipeline
+basePoints: 400
+
+inputLogs:
+  - '{"body":"dual.export 1","attributes":{"pipeline":"dual","exporters":["prometheus","influxdb"]}}'
+  - '{"body":"dual.export 2","attributes":{"pipeline":"dual","exporters":["prometheus","influxdb"]}}'
+
+expectedBodies:
+  - "dual.export 1"
+  - "dual.export 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `hostmetrics` receiver with CPU and memory scrapers"
+  - "Add both **prometheus** and **influxdb** exporters"
+  - "List both exporters in `service.pipelines.logs.exporters`"
+  - "The collector fans out to all listed exporters"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+        cpu:
+        memory:
+
+  exporters:
+    prometheus:
+    influxdb:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: []
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      cpu:
+      memory:
+
+solutionExporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+  influxdb:
+    endpoint: http://influxdb:8086
+    org: myorg
+    bucket: metrics
+    token: my-token

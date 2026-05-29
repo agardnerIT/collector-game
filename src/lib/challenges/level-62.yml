@@ -1,0 +1,46 @@
+id: level-62
+title: Kafka Log Partition
+description: "Configure a **kafka** exporter with custom partitioning. Set `partition_logs_by_resource_attributes` to partition by `service.name` and use a `hash` partitioner for balanced distribution."
+difficulty: hard
+category: exporter-config
+basePoints: 300
+
+inputLogs:
+  - '{"body":"API request started","attributes":{"level":"info","service.name":"api-gateway","method":"GET"}}'
+  - '{"body":"Auth check passed","attributes":{"level":"info","service.name":"auth-service","user":"admin"}}'
+  - '{"body":"DB query executed","attributes":{"level":"info","service.name":"db-layer","query":"SELECT *"}}'
+  - '{"body":"Cache miss","attributes":{"level":"warn","service.name":"api-gateway","cache_key":"users:42"}}'
+
+expectedBodies:
+  - "API request started"
+  - "Auth check passed"
+  - "DB query executed"
+  - "Cache miss"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `kafka` exporter with `brokers` and `topic`"
+  - "Set `partition_logs_by_resource_attributes` to a resource attribute like `service.name`"
+  - "Configure `partitioner` to `hash` for balanced distribution"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [kafka]
+
+solutionExporters:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: logs-topic
+    encoding: otlp_proto
+    partition_logs_by_resource_attributes:
+      - service.name
+    partitioner: hash

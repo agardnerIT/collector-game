@@ -1,0 +1,41 @@
+id: level-102
+title: InfluxDB Export
+description: "Export metrics to InfluxDB. Configure an **influxdb** exporter that sends data to `http://influxdb:8086` with organization `myorg` and bucket `metrics`."
+difficulty: medium
+category: metrics-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"influxdb.write 1","attributes":{"exporter":"influxdb","org":"myorg","bucket":"metrics"}}'
+  - '{"body":"influxdb.write 2","attributes":{"exporter":"influxdb","org":"myorg","bucket":"metrics"}}'
+
+expectedBodies:
+  - "influxdb.write 1"
+  - "influxdb.write 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with an `influxdb` exporter"
+  - "Set `endpoint` to the InfluxDB server URL"
+  - "Set `org` to `myorg`"
+  - "Set `bucket` to `metrics`"
+  - "Set `token` to a placeholder value"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    influxdb:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [influxdb]
+
+solutionExporters:
+  influxdb:
+    endpoint: http://influxdb:8086
+    org: myorg
+    bucket: metrics
+    token: my-token

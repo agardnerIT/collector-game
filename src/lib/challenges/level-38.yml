@@ -1,0 +1,42 @@
+id: level-38
+title: Insert Missing
+description: "When an attribute is missing, add a default value. Use the **attributes** processor with the `insert` action to add `environment: production` on every log that doesn't already have it."
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Deployment finished","attributes":{"level":"info","service":"api"}}'
+  - '{"body":"Deployment finished","attributes":{"level":"info","service":"worker","environment":"staging"}}'
+  - '{"body":"Deployment finished","attributes":{"level":"info","service":"db"}}'
+
+expectedBodies:
+  - "Deployment finished"
+  - "Deployment finished"
+  - "Deployment finished"
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "Use the **attributes** processor with `actions`"
+  - "Action `insert` only sets the value if the key doesn't already exist"
+  - "Key: `environment`, Value: `production`"
+  - "Compare with `upsert` which overwrites existing values"
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: environment
+        value: production
+        action: insert

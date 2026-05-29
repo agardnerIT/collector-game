@@ -1,0 +1,40 @@
+id: level-24
+title: Health Check
+description: "The Collector can expose a health check endpoint for monitoring. Configure the **health_check** extension on port `13133`."
+difficulty: easy
+category: extensions
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Collector started","attributes":{"level":"info","version":"0.1.0"}}'
+  - '{"body":"Pipeline initialized","attributes":{"level":"info","pipeline":"logs"}}'
+
+expectedBodies:
+  - "Collector started"
+  - "Pipeline initialized"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `extensions` section with `health_check`"
+  - "Set the `endpoint` to `0.0.0.0:13133`"
+  - "Add `extensions: [health_check]` under the `service` section"
+  - "Extensions are not part of the pipeline — they run alongside it"
+
+starterYaml: |
+  extensions:
+    health_check:
+
+  service:
+    extensions: [health_check]
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionExtensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+serviceExtensions:
+  - health_check

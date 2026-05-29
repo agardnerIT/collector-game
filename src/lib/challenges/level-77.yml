@@ -1,0 +1,44 @@
+id: level-77
+title: Network Metrics
+description: "Collect network metrics with device filtering. Configure a **hostmetrics** receiver with a `network` scraper that only monitors the `eth0` interface."
+difficulty: medium
+category: metrics-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"network.io 500","attributes":{"metric":"network","device":"eth0","direction":"transmit"}}'
+  - '{"body":"network.io 300","attributes":{"metric":"network","device":"eth0","direction":"receive"}}'
+  - '{"body":"network.errors 0","attributes":{"metric":"network","device":"eth0"}}'
+
+expectedBodies:
+  - "network.io 500"
+  - "network.io 300"
+  - "network.errors 0"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `hostmetrics` receiver with a `network` scraper"
+  - "Use `include` to filter by device name `eth0`"
+  - "Set `include.device` to a list containing `eth0`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      scrapers:
+        network:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [file]
+
+solutionReceivers:
+  hostmetrics:
+    scrapers:
+      network:
+        include:
+          devices:
+            - eth0

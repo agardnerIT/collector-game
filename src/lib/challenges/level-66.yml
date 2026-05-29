@@ -1,0 +1,41 @@
+id: level-66
+title: Bodymap Mode
+description: "Configure an **elasticsearch** exporter using `bodymap` mapping mode for full control over the Elasticsearch document. Set `mapping.mode` to `bodymap` so the log body becomes the document source."
+difficulty: hard
+category: exporter-config
+basePoints: 300
+
+inputLogs:
+  - '{"body":"{\"message\":\"user signup\",\"event_type\":\"auth\"}","attributes":{"level":"info"}}'
+  - '{"body":"{\"message\":\"payment processed\",\"amount\":49.99}","attributes":{"level":"info"}}'
+  - '{"body":"Plain text log entry","attributes":{"level":"warn"}}'
+
+expectedBodies:
+  - '{"message":"user signup","event_type":"auth"}'
+  - '{"message":"payment processed","amount":49.99}'
+  - "Plain text log entry"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `elasticsearch` exporter with `endpoint` and `api_key`"
+  - "Add a `mapping` section and set `mode` to `bodymap`"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    elasticsearch:
+      mapping:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [elasticsearch]
+
+solutionExporters:
+  elasticsearch:
+    endpoint: https://es-cluster:9200
+    api_key: base64encodedkey==
+    mapping:
+      mode: bodymap

@@ -1,0 +1,51 @@
+id: level-08
+title: Two-Step Pipeline
+description: "Combine what you've learned! These logs have emails in the attributes **and** credit card numbers in the body. Build a **pipeline** that: (1) deletes `user.email` attribute, (2) replaces 16-digit card numbers with `[REDACTED]` in the body."
+difficulty: medium
+category: pipeline
+basePoints: 250
+
+inputLogs:
+  - '{"body":"Order #1234: card 4532123456789012 processed for customer","attributes":{"user.email":"vip@luxurystore.com","level":"info","order_id":"1234"}}'
+  - '{"body":"Refund: card 6011987654321098 for $150.00","attributes":{"user.email":"returns@shopnow.net","level":"info","refund_id":"r-889"}}'
+  - '{"body":"Card 3789456123098765 expired during checkout","attributes":{"user.email":"shopper@mart.io","level":"warn","session":"s-445"}}'
+
+expectedBodies:
+  - "Order #1234: card [REDACTED] processed for customer"
+  - "Refund: card [REDACTED] for $150.00"
+  - "Card [REDACTED] expired during checkout"
+
+requiredProcessors:
+  - attributes
+  - transform
+
+hints:
+  - "You need TWO processors: `attributes` and `transform`"
+  - "List them in order: `[attributes, transform]`"
+  - First delete `user.email` (attributes processor)
+  - Then replace_pattern for card numbers (transform processor)
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes, transform]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: user.email
+        action: delete
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'replace_pattern(body, "\\d{16}", "[REDACTED]")'

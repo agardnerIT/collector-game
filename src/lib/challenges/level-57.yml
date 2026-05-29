@@ -1,0 +1,41 @@
+id: level-57
+title: Compressed Logs
+description: "Log files are often compressed to save space. Configure the `filelog` receiver to read **gzip** compressed files by setting the `compression` option."
+difficulty: medium
+category: receiver-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Log line from compressed file","attributes":{"level":"info"}}'
+  - '{"body":"Another log line","attributes":{"level":"warn"}}'
+
+expectedBodies:
+  - "Log line from compressed file"
+  - "Another log line"
+
+requiredProcessors: []
+
+hints:
+  - "Use the `filelog` receiver"
+  - "Set `compression` to `gzip`"
+  - "Files with `.gz` extension will be decompressed automatically"
+  - "Set `start_at: beginning`"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log.gz]
+      start_at: beginning
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log.gz
+    start_at: beginning
+    compression: gzip

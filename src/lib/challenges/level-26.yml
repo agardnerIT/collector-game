@@ -1,0 +1,68 @@
+id: level-26
+title: Route by Level
+description: "Route logs to different pipelines based on their severity level. Use the **routing** processor to send `error` logs to a dedicated pipeline while normal logs go through the standard one."
+difficulty: hard
+category: conditional
+basePoints: 400
+
+inputLogs:
+  - '{"body":"Connection established","attributes":{"level":"info","service":"db"}}'
+  - '{"body":"Disk full — write failed","attributes":{"level":"error","service":"storage","device":"/dev/sda1"}}'
+  - '{"body":"Health check passed","attributes":{"level":"info","service":"api"}}'
+
+expectedBodies:
+  - "Connection established"
+  - "Disk full — write failed"
+  - "Health check passed"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `routing` processor with a `table` of routes"
+  - "Each route has a `statement` using the `route()` function"
+  - "Route error logs to `logs/errors` pipeline"
+  - "You also need TWO pipelines: `logs` and `logs/errors`"
+  - "The error pipeline can just use a file exporter with a different path"
+
+starterYaml: |
+  processors:
+    routing:
+      table:
+
+  exporters:
+    file/normal:
+      path: /tmp/normal-logs.json
+    file/errors:
+      path: /tmp/error-logs.json
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        processors: [routing]
+        exporters: [file/normal]
+      logs/errors:
+        receivers: [filelog]
+        processors: []
+        exporters: [file/errors]
+
+solutionProcessors:
+  routing:
+    table:
+      - statement: 'route()'
+
+solutionExporters:
+  file/normal:
+    path: /tmp/normal-logs.json
+  file/errors:
+    path: /tmp/error-logs.json
+
+solutionPipelines:
+  logs:
+    receivers: [filelog]
+    processors: [routing]
+    exporters: [file/normal]
+  logs/errors:
+    receivers: [filelog]
+    processors: []
+    exporters: [file/errors]

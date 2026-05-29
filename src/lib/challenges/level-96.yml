@@ -1,0 +1,40 @@
+id: level-96
+title: Group by Host
+description: "Group metrics by hostname into separate resources. Configure a **groupbyattrs** processor with `keys: [host.name]` to split metrics into groups by their source host."
+difficulty: medium
+category: metrics-processing
+basePoints: 200
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.5","attributes":{"metric":"cpu","host.name":"web-01"}}'
+  - '{"body":"cpu.utilization 0.3","attributes":{"metric":"cpu","host.name":"web-02"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory","host.name":"web-01"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.5"
+  - "cpu.utilization 0.3"
+  - "memory.usage 1000"
+
+requiredProcessors:
+  - groupbyattrs
+
+hints:
+  - "Use the **groupbyattrs** processor"
+  - "Set `keys` to include `host.name`"
+  - "This groups data points into separate resources by host"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    groupbyattrs:
+      keys: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [groupbyattrs]
+
+solutionProcessors:
+  groupbyattrs:
+    keys:
+      - host.name

@@ -1,0 +1,38 @@
+id: level-22
+title: Ship to Loki
+description: "Send your logs to Grafana Loki for centralized log aggregation. Configure a **Loki exporter** that pushes logs to `https://loki.example.com:3100/loki/api/v1/push`."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Dashboard rendered","attributes":{"level":"info","user":"admin","page":"/metrics"}}'
+  - '{"body":"Export job completed","attributes":{"level":"info","rows":5000}}'
+  - '{"body":"API token expired","attributes":{"level":"warn","service":"auth"}}'
+
+expectedBodies:
+  - "Dashboard rendered"
+  - "Export job completed"
+  - "API token expired"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with a `loki` exporter"
+  - "Set `endpoint` to the Loki push API URL"
+  - "Loki is a log aggregation system from Grafana Labs"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    loki:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [loki]
+
+solutionExporters:
+  loki:
+    endpoint: https://loki.example.com:3100/loki/api/v1/push

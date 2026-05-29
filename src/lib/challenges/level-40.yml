@@ -1,0 +1,42 @@
+id: level-40
+title: Extract Regex
+description: "Extract structured data from an existing attribute using regex. Use the **attributes** processor with the `extract` action to parse `version: v2.1.3-rc1` into separate `version_major`, `version_minor`, `version_patch`, and `version_tag` attributes."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Deploy released","attributes":{"level":"info","version":"v2.1.3-rc1"}}'
+  - '{"body":"Deploy released","attributes":{"level":"info","version":"v3.0.0"}}'
+  - '{"body":"Deploy released","attributes":{"level":"info","version":"v1.5.2-beta"}}'
+
+expectedBodies:
+  - "Deploy released"
+  - "Deploy released"
+  - "Deploy released"
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "Use the **attributes** processor with `extract` action"
+  - "The `key` is the attribute to extract from: `version`"
+  - "The `pattern` uses named capture groups: `v(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<tag>\\w+))?`"
+  - "Extracted values become new attribute keys matching the group names"
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: version
+        pattern: 'v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(-(?P<tag>\w+))?'
+        action: extract

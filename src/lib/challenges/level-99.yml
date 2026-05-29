@@ -1,0 +1,40 @@
+id: level-99
+title: Const Labels
+description: "Add constant labels to all Prometheus metrics. Configure a **prometheus** exporter that adds `environment: production` and `team: platform` as constant labels to every exported metric."
+difficulty: hard
+category: metrics-exporter
+basePoints: 300
+
+inputLogs:
+  - '{"body":"cpu.utilization 0.5","attributes":{"metric":"cpu","env":"production","team":"platform"}}'
+  - '{"body":"memory.usage 1000","attributes":{"metric":"memory","env":"production","team":"platform"}}'
+
+expectedBodies:
+  - "cpu.utilization 0.5"
+  - "memory.usage 1000"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `prometheus` exporter with `endpoint`"
+  - "Add `const_labels` as a map of key-value pairs"
+  - "Set labels for `environment` and `team`"
+  - "Wire into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    prometheus:
+      const_labels:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [prometheus]
+
+solutionExporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    const_labels:
+      environment: production
+      team: platform

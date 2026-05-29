@@ -1,0 +1,40 @@
+id: level-23
+title: Syslog Watcher
+description: "Configure a **syslog receiver** to listen for incoming syslog messages over TCP on port `514`, using the `rfc5424` protocol format."
+difficulty: medium
+category: receiver-config
+basePoints: 200
+
+inputLogs:
+  - "<34>1 2024-01-15T10:00:00Z myhost myapp 1234 - - Server started"
+  - "<34>1 2024-01-15T10:01:00Z myhost myapp 1234 - - User login from 10.0.0.5"
+  - "<34>1 2024-01-15T10:02:00Z myhost myapp 1234 - - Connection timeout"
+
+expectedBodies:
+  - "<34>1 2024-01-15T10:00:00Z myhost myapp 1234 - - Server started"
+  - "<34>1 2024-01-15T10:01:00Z myhost myapp 1234 - - User login from 10.0.0.5"
+  - "<34>1 2024-01-15T10:02:00Z myhost myapp 1234 - - Connection timeout"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `syslog` receiver"
+  - "Configure TCP protocol under the `tcp` key with a `listen_address`"
+  - "Set the `protocol` to `rfc5424` for standard syslog format"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    syslog:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [syslog]
+        exporters: [file]
+
+solutionReceivers:
+  syslog:
+    tcp:
+      listen_address: 0.0.0.0:514
+    protocol: rfc5424

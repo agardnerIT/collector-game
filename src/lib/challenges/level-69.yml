@@ -1,0 +1,40 @@
+id: level-69
+title: Env Detector
+description: "Automatically detect resource attributes from environment variables. Configure a **resourcedetection** processor with the `env` detector to read `OTEL_RESOURCE_ATTRIBUTES` from the environment."
+difficulty: easy
+category: enrichment
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Service starting","attributes":{"level":"info"}}'
+  - '{"body":"Health check passed","attributes":{"level":"info"}}'
+  - '{"body":"Shutdown initiated","attributes":{"level":"warn"}}'
+
+expectedBodies:
+  - "Service starting"
+  - "Health check passed"
+  - "Shutdown initiated"
+
+requiredProcessors:
+  - resourcedetection
+
+hints:
+  - "Use the **resourcedetection** processor"
+  - "Set `detectors` to a list containing `env`"
+  - "The `env` detector reads `OTEL_RESOURCE_ATTRIBUTES` automatically"
+  - "Wire it into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    resourcedetection:
+      detectors: []
+
+  service:
+    pipelines:
+      logs:
+        processors: [resourcedetection]
+
+solutionProcessors:
+  resourcedetection:
+    detectors:
+      - env

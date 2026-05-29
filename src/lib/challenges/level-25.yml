@@ -1,0 +1,92 @@
+id: level-25
+title: Double Pipeline
+description: "Real-world deployments often need different processing for different log streams. Create **two pipelines**:
+
+- **`logs`** — uses the `filter` processor to drop debug logs, then the `attributes` processor to hash emails
+- **`logs/important`** — only hashes emails (keeps debug logs)
+
+Both pipelines read from the same `filelog` receiver."
+difficulty: hard
+category: pipeline
+basePoints: 400
+
+inputLogs:
+  - '{"body":"Cache refreshed","attributes":{"level":"debug","user.email":"cache@system.local","cache":"users"}}'
+  - '{"body":"Order placed","attributes":{"level":"info","user.email":"buyer@shop.com","order":"ORD-123"}}'
+  - '{"body":"Payment failed","attributes":{"level":"error","user.email":"billing@corp.net","amount":99.95}}'
+
+expectedBodies:
+  - "Cache refreshed"
+  - "Order placed"
+  - "Payment failed"
+
+requiredProcessors: []
+
+hints:
+  - "You need TWO entries under `service.pipelines`"
+  - "The first is `logs` with `filter` then `attributes` processors"
+  - "The second is `logs/important` with just `attributes`"
+  - "Both use the same `filelog` receiver"
+  - "Use separate `file` exporters for each pipeline path"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+
+  processors:
+    filter:
+      logs:
+        log_record:
+    attributes:
+      actions:
+
+  exporters:
+    file/normal:
+      path: /tmp/normal-logs.json
+    file/important:
+      path: /tmp/important-logs.json
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        processors: [filter, attributes]
+        exporters: [file/normal]
+      logs/important:
+        receivers: [filelog]
+        processors: [attributes]
+        exporters: [file/important]
+
+solutionProcessors:
+  filter:
+    logs:
+      log_record:
+        - 'IsMatch(attributes["level"], "debug")'
+  attributes:
+    actions:
+      - key: user.email
+        action: hash
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+
+solutionExporters:
+  file/normal:
+    path: /tmp/normal-logs.json
+  file/important:
+    path: /tmp/important-logs.json
+
+solutionPipelines:
+  logs:
+    receivers: [filelog]
+    processors: [filter, attributes]
+    exporters: [file/normal]
+  logs/important:
+    receivers: [filelog]
+    processors: [attributes]
+    exporters: [file/important]

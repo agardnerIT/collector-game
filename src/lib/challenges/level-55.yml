@@ -1,0 +1,51 @@
+id: level-55
+title: Timestamp Parse
+description: "Add timestamp parsing to a `filelog` receiver operator. Configure a `regex_parser` that extracts a timestamp and parses it into the log record's observed timestamp."
+difficulty: medium
+category: receiver-operators
+basePoints: 250
+
+inputLogs:
+  - "2024-01-15 10:30:00 INFO Server started"
+  - "2024-01-15 10:31:00 ERROR Connection timeout"
+  - "2024-01-15 10:32:00 WARN Disk usage high"
+
+expectedBodies:
+  - "2024-01-15 10:30:00 INFO Server started"
+  - "2024-01-15 10:31:00 ERROR Connection timeout"
+  - "2024-01-15 10:32:00 WARN Disk usage high"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `regex_parser` operator to the `filelog` receiver"
+  - "Pattern: `^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?P<severity>\\w+) (?P<message>.*)$`"
+  - "Add a `timestamp` config to the operator with `parse_from: attributes.timestamp`"
+  - "Set `layout: '%Y-%m-%d %H:%M:%S'` for the timestamp format"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      operators:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    operators:
+      - type: regex_parser
+        regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<severity>\w+) (?P<message>.*)$'
+        parse_from: body
+        parse_to: attributes
+        timestamp:
+          parse_from: attributes.timestamp
+          layout: '%Y-%m-%d %H:%M:%S'

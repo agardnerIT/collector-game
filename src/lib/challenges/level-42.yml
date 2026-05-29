@@ -1,0 +1,44 @@
+id: level-42
+title: Merge Maps
+description: "Parse JSON from the log body and merge it into the attributes. Use the **transform** processor with `merge_maps` and `ParseJSON` to bring body fields into attributes."
+difficulty: medium
+category: transformation
+basePoints: 200
+
+inputLogs:
+  - '{"body":"{\"event\": \"login\", \"user_id\": 42}","attributes":{"level":"info"}}'
+  - '{"body":"{\"event\": \"purchase\", \"amount\": 29.99}","attributes":{"level":"info"}}'
+  - '{"body":"Plain text log here","attributes":{"level":"info"}}'
+
+expectedBodies:
+  - '{"event": "login", "user_id": 42}'
+  - '{"event": "purchase", "amount": 29.99}'
+  - "Plain text log here"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the **transform** processor with `log_statements`"
+  - "Parse the body as JSON with `ParseJSON(log.body)`"
+  - "Merge the result into attributes with `merge_maps(log.attributes, ..., \"upsert\")`"
+  - "Use a condition: `where IsMatch(log.body, \"^\\\\{\")` to skip non-JSON bodies"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'merge_maps(log.attributes, ParseJSON(log.body), "upsert") where IsMatch(log.body, "^\\{")'

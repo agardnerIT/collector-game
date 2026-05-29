@@ -1,0 +1,38 @@
+id: level-54
+title: OTLP File Interval
+description: "Control how often the OTLP JSON File receiver checks for new data. Set the `collection_interval` to **10 seconds**."
+difficulty: easy
+category: receiver-config
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Telemetry ingested from file","attributes":{"source":"otlp-json","level":"info"}}'
+
+expectedBodies:
+  - "Telemetry ingested from file"
+
+requiredProcessors: []
+
+hints:
+  - "Use the `otlpjsonfile` receiver"
+  - "Add `collection_interval` set to `10s`"
+  - "This controls how often the receiver scans the file for new data"
+  - "Shorter intervals mean lower latency but more I/O"
+
+starterYaml: |
+  receivers:
+    otlpjsonfile:
+      include: /var/log/otlp/logs.json
+      start_at: beginning
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlpjsonfile]
+        exporters: [file]
+
+solutionReceivers:
+  otlpjsonfile:
+    include: /var/log/otlp/logs.json
+    start_at: beginning
+    collection_interval: 10s

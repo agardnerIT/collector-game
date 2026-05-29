@@ -1,0 +1,41 @@
+id: level-89
+title: Selective Convert
+description: "Only convert specific metrics to delta. Configure a **cumulativetodelta** processor that only converts metrics matching `system.cpu.*` and leaves all other metrics untouched."
+difficulty: medium
+category: metrics-processing
+basePoints: 200
+
+inputLogs:
+  - '{"body":"system.cpu.time 5000","attributes":{"metric":"system.cpu.time","type":"cumulative"}}'
+  - '{"body":"system.memory.usage 10000","attributes":{"metric":"system.memory.usage","type":"cumulative"}}'
+  - '{"body":"system.cpu.time 5200","attributes":{"metric":"system.cpu.time","type":"cumulative"}}'
+
+expectedBodies:
+  - "system.cpu.time 5000"
+  - "system.memory.usage 10000"
+  - "system.cpu.time 5200"
+
+requiredProcessors:
+  - cumulativetodelta
+
+hints:
+  - "Use the **cumulativetodelta** processor"
+  - "Add an `include` section with `metric_names`"
+  - "Set `match_type` to `regexp` and list the metric patterns"
+  - "Wire into `service.pipelines.logs.processors`"
+
+starterYaml: |
+  processors:
+    cumulativetodelta:
+
+  service:
+    pipelines:
+      logs:
+        processors: [cumulativetodelta]
+
+solutionProcessors:
+  cumulativetodelta:
+    include:
+      match_type: regexp
+      metric_names:
+        - system.cpu.*

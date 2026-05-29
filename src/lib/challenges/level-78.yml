@@ -1,0 +1,43 @@
+id: level-78
+title: Custom Collection
+description: "Optimize metric collection frequency. Configure a **hostmetrics** receiver with a `collection_interval` of `10s` and enable `cpu`, `memory`, and `disk` scrapers."
+difficulty: medium
+category: metrics-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"cpu 0.35 memory 0.60 disk 0.20","attributes":{"host":"localhost","interval":"10s"}}'
+  - '{"body":"cpu 0.55 memory 0.62 disk 0.21","attributes":{"host":"localhost","interval":"10s"}}'
+  - '{"body":"cpu 0.40 memory 0.58 disk 0.19","attributes":{"host":"localhost","interval":"10s"}}'
+
+expectedBodies:
+  - "cpu 0.35 memory 0.60 disk 0.20"
+  - "cpu 0.55 memory 0.62 disk 0.21"
+  - "cpu 0.40 memory 0.58 disk 0.19"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `hostmetrics` receiver with `collection_interval: 10s`"
+  - "Enable `cpu`, `memory`, and `disk` in the `scrapers` section"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    hostmetrics:
+      collection_interval:
+      scrapers:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [hostmetrics]
+        exporters: [file]
+
+solutionReceivers:
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      memory:
+      disk:

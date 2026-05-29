@@ -1,0 +1,38 @@
+id: level-03
+title: Watch the Logs
+description: "So far we've been processing logs that already arrived. But how does the Collector **ingest** them? Configure a `filelog` receiver to monitor `/var/log/app.log`, starting at the beginning of the file."
+difficulty: easy
+category: receiver-config
+basePoints: 120
+
+inputLogs:
+  - "Server started on port 8080"
+  - "Connection from 10.0.0.5"
+  - "Disk usage at 90%"
+
+expectedBodies:
+  - Server started on port 8080
+  - Connection from 10.0.0.5
+  - Disk usage at 90%
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section to your config"
+  - "Use the **filelog** receiver type — it reads from log files"
+  - "It needs `include` (a list of file paths to watch)"
+  - "The pipeline also needs `receivers: [filelog]` under `service.pipelines.logs`"
+
+starterYaml: |
+  receivers:
+    filelog:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log

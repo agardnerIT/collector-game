@@ -1,0 +1,38 @@
+id: level-21
+title: Send with OTLP
+description: "To ship logs to a central backend, configure an **OTLP exporter** that sends data to `https://my-otel-backend:4317`."
+difficulty: medium
+category: exporter-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Request completed in 42ms","attributes":{"level":"info","latency_ms":42}}'
+  - '{"body":"Database connection established","attributes":{"level":"info","db":"users"}}'
+  - '{"body":"Rate limit hit for client abc-123","attributes":{"level":"warn","client":"abc-123"}}'
+
+expectedBodies:
+  - "Request completed in 42ms"
+  - "Database connection established"
+  - "Rate limit hit for client abc-123"
+
+requiredProcessors: []
+
+hints:
+  - "Add an `exporters` section with an `otlp` exporter"
+  - "Set `endpoint` to the OTLP backend URL"
+  - "The OTLP exporter sends data via gRPC"
+  - "Wire it into `service.pipelines.logs.exporters`"
+
+starterYaml: |
+  exporters:
+    otlp:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [otlp]
+
+solutionExporters:
+  otlp:
+    endpoint: https://my-otel-backend:4317

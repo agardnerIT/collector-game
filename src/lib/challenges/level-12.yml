@@ -1,0 +1,68 @@
+id: level-12
+title: Full Pipeline
+description: "Now put it all together! Configure a **complete** OpenTelemetry Collector pipeline that:
+
+1. Reads logs from `/var/log/app.log` (starting at the beginning)
+2. Deletes any `user.email` attributes from the telemetry
+3. Exports the result to a file at `/tmp/clean-logs.json`
+
+You'll need to configure **receivers**, **processors**, **exporters**, and wire them together in `service.pipelines.logs`."
+difficulty: hard
+category: pipeline
+basePoints: 400
+
+inputLogs:
+  - '{"body":"Order confirmed","attributes":{"user.email":"buyer@shop.com","level":"info","order":"123"}}'
+  - '{"body":"Refund initiated","attributes":{"user.email":"customer@store.net","level":"info","refund":"r-456"}}'
+  - '{"body":"Login failed","attributes":{"level":"warn","ip":"10.0.0.5"}}'
+  - '{"body":"Account deleted","attributes":{"user.email":"leaving@startup.io","level":"info","reason":"manual"}}'
+
+expectedBodies:
+  - Order confirmed
+  - Refund initiated
+  - Login failed
+  - Account deleted
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "You need three sections: `receivers`, `processors`, and `exporters`"
+  - "The `filelog` receiver needs `include` and `start_at`"
+  - "Use the `attributes` processor with the `delete` action on `user.email`"
+  - "The `file` exporter needs a `path` setting"
+  - Wire it all together in `service.pipelines.logs`
+
+starterYaml: |
+  receivers:
+    filelog:
+
+  processors:
+    attributes:
+      actions:
+
+  exporters:
+    file:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        processors: [attributes]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: user.email
+        action: delete
+
+solutionExporters:
+  file:
+    path: /tmp/clean-logs.json

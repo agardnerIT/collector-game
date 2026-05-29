@@ -1,0 +1,42 @@
+id: level-67
+title: Kafka Consume Logs
+description: "Consume logs from Apache Kafka. Configure a **kafka** receiver that reads from `kafka-broker:9092` on the `logs-topic` topic using `raw` encoding for log data."
+difficulty: medium
+category: receiver-config
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Consumed log entry 1","attributes":{"level":"info"}}'
+  - '{"body":"Consumed log entry 2","attributes":{"level":"warn"}}'
+  - '{"body":"Consumed log entry 3","attributes":{"level":"error"}}'
+
+expectedBodies:
+  - "Consumed log entry 1"
+  - "Consumed log entry 2"
+  - "Consumed log entry 3"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `receivers` section with a `kafka` receiver"
+  - "Set `brokers` to a list containing `kafka-broker:9092`"
+  - "Set `topic` to `logs-topic`"
+  - "Set `encoding` to `raw` for raw log consumption"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [kafka]
+        exporters: [file]
+
+solutionReceivers:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: logs-topic
+    encoding: raw

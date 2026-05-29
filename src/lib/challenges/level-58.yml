@@ -1,0 +1,53 @@
+id: level-58
+title: Header Metadata
+description: "Some log files have header lines with metadata before the data begins. Configure the `filelog` receiver with `header.pattern` to recognize header lines starting with `#` and parse them."
+difficulty: hard
+category: receiver-config
+basePoints: 350
+
+inputLogs:
+  - "# hostname: web-01"
+  - "# datacenter: us-east-1"
+  - "INFO Server started on port 8080"
+  - "ERROR Connection timeout"
+  - "WARN Disk usage at 85%"
+
+expectedBodies:
+  - "INFO Server started on port 8080"
+  - "ERROR Connection timeout"
+  - "WARN Disk usage at 85%"
+
+requiredProcessors: []
+
+hints:
+  - "The `filelog.allowHeaderMetadataParsing` feature gate must be enabled"
+  - "Set `header.pattern` to match lines starting with `#`: `^#.*$`"
+  - "Add `header.metadata_operators` with a `regex_parser`"
+  - "Pattern for header values: `^# (?P<key>\\w+): (?P<value>.*)$`"
+  - "Header metadata attributes are added to every log line from the file"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      header:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [filelog]
+        exporters: [file]
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    header:
+      pattern: '^#.*$'
+      metadata_operators:
+        - type: regex_parser
+          regex: '^# (?P<key>\w+): (?P<value>.*)$'
+          parse_from: body
+          parse_to: attributes

@@ -1,0 +1,56 @@
+id: level-80
+title: Multiple Targets
+description: "Scrape metrics from two different endpoints. Configure a **prometheus** receiver with two scrape jobs: one for the app on `:8080` and one for the collector on `:9090`."
+difficulty: medium
+category: metrics-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"app_requests 50","attributes":{"job":"app","instance":"app:8080"}}'
+  - '{"body":"collector_up 1","attributes":{"job":"otel-collector","instance":"collector:9090"}}'
+  - '{"body":"app_errors 2","attributes":{"job":"app","instance":"app:8080"}}'
+
+expectedBodies:
+  - "app_requests 50"
+  - "collector_up 1"
+  - "app_errors 2"
+
+requiredProcessors: []
+
+hints:
+  - "Add a `prometheus` receiver with `scrape_configs` containing two jobs"
+  - "Each job needs a unique `job_name` and `static_configs` with targets"
+  - "First job: `app` on `app:8080`"
+  - "Second job: `otel-collector` on `collector:9090`"
+  - "Wire into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: app
+            static_configs:
+              - targets: []
+          - job_name: otel-collector
+            static_configs:
+              - targets: []
+
+  service:
+    pipelines:
+      logs:
+        receivers: [prometheus]
+        exporters: [file]
+
+solutionReceivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: app
+          static_configs:
+            - targets:
+                - app:8080
+        - job_name: otel-collector
+          static_configs:
+            - targets:
+                - collector:9090

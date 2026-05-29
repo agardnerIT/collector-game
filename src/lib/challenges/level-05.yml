@@ -1,0 +1,43 @@
+id: level-05
+title: Set the Stage
+description: Enrich these logs by setting a new attribute `environment` to `production` on all log records. Use the **transform** processor with OTTL's `set` function.
+difficulty: easy
+category: transformation
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Deploy v2.4.1 to cluster-east","attributes":{"level":"info","service":"deployer"}}'
+  - '{"body":"Database migration step 3/5","attributes":{"level":"info","migration_id":"mig-042"}}'
+  - '{"body":"SSL certificate expires in 7 days","attributes":{"level":"warn","domain":"api.example.com"}}'
+
+expectedBodies:
+  - Deploy v2.4.1 to cluster-east
+  - Database migration step 3/5
+  - SSL certificate expires in 7 days
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor like in Level 2"
+  - "Use OTTL's `set` function: `set(attributes[\"environment\"], \"production\")`"
+  - "Make sure the context is `log`"
+
+starterYaml: |
+  processors:
+    transform:
+      log_statements:
+        - context: log
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          - 'set(attributes["environment"], "production")'

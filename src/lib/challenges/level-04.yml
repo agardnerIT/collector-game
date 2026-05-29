@@ -1,0 +1,44 @@
+id: level-04
+title: Debug Off
+description: These logs are too noisy! Use the **filter** processor to drop all log records where `IsMatch(attributes["level"], "debug")` is true. Only keep `info` and above.
+difficulty: easy
+category: filtering
+basePoints: 150
+
+inputLogs:
+  - '{"body":"Cache hit for key user:12345","attributes":{"level":"debug","cache_key":"user:12345"}}'
+  - '{"body":"Request received from 10.0.0.5","attributes":{"level":"info","ip":"10.0.0.5"}}'
+  - '{"body":"Database query took 245ms","attributes":{"level":"debug","query_time_ms":245}}'
+  - '{"body":"Failing health check: disk 95% full","attributes":{"level":"error","disk_usage_pct":95}}'
+  - '{"body":"User settings saved","attributes":{"level":"info","user_id":"abc-001"}}'
+
+expectedBodies:
+  - Request received from 10.0.0.5
+  - "Failing health check: disk 95% full"
+  - User settings saved
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the `filter` processor with `logs` config"
+  - "Use `log_record` in the condition to check attributes"
+  - "Check if `level` equals `debug` with `IsMatch`"
+  - 'The condition: `IsMatch(attributes["level"], "debug")`'
+
+starterYaml: |
+  processors:
+    filter:
+      logs:
+        log_record:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    logs:
+      log_record:
+        - 'IsMatch(attributes["level"], "debug")'
