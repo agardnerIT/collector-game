@@ -1,5 +1,7 @@
 # OpenTelemetry Collector Game
 
+![opentelemetry collector game](assets/collectorgameoverview.png)
+
 Learn the OpenTelemetry Collector with a game!
 
 107 (and counting) scenarios covering receivers, processors, exporters and all signal types.
