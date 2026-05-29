@@ -1,4 +1,4 @@
-# collector-game
+# OpenTelemetry Collector Game
 
 Learn the OpenTelemetry Collector with a game!
 
