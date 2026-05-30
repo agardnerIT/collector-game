@@ -118,7 +118,7 @@ export default function ScoreBar() {
                     transition={{ duration: 0.4 }}
                   />
                 </div>
-                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{starterDone}</span>
+                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{hydrated ? starterDone : 0}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[9px] font-bold text-green-600 w-8">Easy</span>
@@ -130,7 +130,7 @@ export default function ScoreBar() {
                     transition={{ duration: 0.4 }}
                   />
                 </div>
-                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{completedEasyCount()}</span>
+                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{hydrated ? completedEasyCount() : 0}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[9px] font-bold text-yellow-600 w-8">Med</span>
@@ -142,7 +142,7 @@ export default function ScoreBar() {
                     transition={{ duration: 0.4 }}
                   />
                 </div>
-                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{completedMediumCount()}</span>
+                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{hydrated ? completedMediumCount() : 0}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[9px] font-bold text-red-600 w-8">Hard</span>
@@ -154,7 +154,7 @@ export default function ScoreBar() {
                     transition={{ duration: 0.4 }}
                   />
                 </div>
-                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{completedHardCount()}</span>
+                <span className="text-[9px] font-bold text-gray-400 w-8 text-right">{hydrated ? completedHardCount() : 0}</span>
               </div>
             </div>
           </div>
