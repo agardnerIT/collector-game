@@ -17,3 +17,7 @@ This app is an easy way to learn concepts and configurations for the OpenTelemet
 - Rewards
 - Light and dark mode
 - Extensible (add your own scenarios)
+
+## Contributing scenarios
+
+Want to add your own scenarios? Check out the scenarios in `src/scenarios/` to see the format, then submit a pull request. If you're not comfortable with that, just [raise an issue](https://github.com/adamgardner/collector-game/issues) to suggest a scenario.
