@@ -1,0 +1,36 @@
+id: level-108
+title: OTLP gRPC
+description: "Configure an **OTLP receiver** to accept traces over gRPC on the default port `4317`. The OTLP receiver is the standard way to ingest trace data from instrumented applications."
+difficulty: easy
+category: trace-receiver
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Received trace via gRPC on port 4317","attributes":{"receiver":"otlp","protocol":"grpc","signal":"traces"}}'
+
+expectedBodies:
+  - "Received trace via gRPC on port 4317"
+
+requiredReceivers:
+  - otlp
+
+hints:
+  - "Add a `receivers` section with an `otlp` receiver"
+  - "The OTLP receiver accepts `protocols` with `grpc` (enabled by default on port 4317)"
+  - "Wire it into `service.pipelines.logs.receivers`"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: [file]
+
+solutionReceivers:
+  otlp:
+    protocols:
+      grpc:

@@ -1,0 +1,56 @@
+id: level-131
+title: Span Metrics Connector
+description: "Generate metrics from trace spans using the **spanmetrics** connector. Configure a traces pipeline that feeds into a metrics pipeline via the connector, producing metrics like `calls_total` and `duration` from incoming spans."
+difficulty: hard
+category: trace-pipeline
+basePoints: 500
+
+inputLogs:
+  - '{"body":"Span converted to metrics via spanmetrics connector","attributes":{"connector":"spanmetrics","signal":"traces"}}'
+  - '{"body":"Another span converted to metrics","attributes":{"connector":"spanmetrics","signal":"traces"}}'
+
+expectedBodies:
+  - "Span converted to metrics via spanmetrics connector"
+  - "Another span converted to metrics"
+
+hints:
+  - "Add a `spanmetrics` connector in the `connectors` section"
+  - "Create a `traces` pipeline with `otlp` receiver and `spanmetrics` exporter"
+  - "Create a `metrics` pipeline with `spanmetrics` receiver and `prometheus` exporter"
+  - "The connector bridges the two pipelines"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+  connectors:
+    spanmetrics:
+
+  exporters:
+    prometheus:
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        exporters: [spanmetrics]
+      metrics:
+        receivers: [spanmetrics]
+        exporters: [prometheus]
+
+solutionConnectors:
+  spanmetrics:
+
+solutionPipelines:
+  traces:
+    receivers:
+      - otlp
+    exporters:
+      - spanmetrics
+  metrics:
+    receivers:
+      - spanmetrics
+    exporters:
+      - prometheus

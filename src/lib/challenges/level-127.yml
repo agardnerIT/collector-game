@@ -1,0 +1,41 @@
+id: level-127
+title: Kafka Export
+description: "Export traces to Kafka for async processing or multi-destination fan-out. Configure the **kafka exporter** to send traces to `kafka-broker:9092` on topic `traces` with `otlp_proto` encoding."
+difficulty: medium
+category: trace-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Trace published to kafka topic","attributes":{"exporter":"kafka","topic":"traces","broker":"kafka-broker:9092"}}'
+  - '{"body":"Another trace message published","attributes":{"exporter":"kafka","topic":"traces","broker":"kafka-broker:9092"}}'
+
+expectedBodies:
+  - "Trace published to kafka topic"
+  - "Another trace message published"
+
+requiredExporters:
+  - kafka
+
+hints:
+  - "Add a `kafka` exporter to the `exporters` section"
+  - "Set `brokers` to a list containing `kafka-broker:9092`"
+  - "Set `topic` to `traces`"
+  - "Set `encoding` to `otlp_proto`"
+  - "Wire into the pipeline exporters"
+
+starterYaml: |
+  exporters:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: [kafka]
+
+solutionExporters:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: traces
+    encoding: otlp_proto

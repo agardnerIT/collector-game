@@ -1,0 +1,49 @@
+id: level-117
+title: Tail Composite Policy
+description: "Combine multiple sampling conditions. Configure the **tail_sampling** processor with a composite policy: keep traces where `http.status_code >= 400` **OR** the trace duration is greater than `100ms`."
+difficulty: hard
+category: trace-processor
+basePoints: 400
+
+inputLogs:
+  - '{"body":"Slow error trace kept by composite","attributes":{"processor":"tail_sampling","policy":"composite"}}'
+  - '{"body":"Fast error trace kept by composite","attributes":{"processor":"tail_sampling","policy":"composite"}}'
+
+expectedBodies:
+  - "Slow error trace kept by composite"
+  - "Fast error trace kept by composite"
+
+requiredProcessors:
+  - tail_sampling
+
+hints:
+  - "Use the `composite` policy type in `tail_sampling`"
+  - "Add `numeric_attribute` sub-policy for `http.status_code` with min 400"
+  - "Add `latency` sub-policy with `threshold_ms: 100`"
+  - "Composite policies combine with `AND` logic by default"
+  - "Set `max_traces` to a high number to avoid dropping matched traces"
+
+starterYaml: |
+  processors:
+    tail_sampling:
+      policies:
+
+  service:
+    pipelines:
+      logs:
+        processors: [tail_sampling]
+
+solutionProcessors:
+  tail_sampling:
+    policies:
+      - type: composite
+        config:
+          max_traces: 10000
+          policies:
+            - type: numeric_attribute
+              config:
+                key: http.status_code
+                min_value: 400
+            - type: latency
+              config:
+                threshold_ms: 100

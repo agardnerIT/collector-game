@@ -1,0 +1,37 @@
+id: level-112
+title: Batch
+description: "When processing high-volume traces, batching improves efficiency. Configure the **batch** processor to send batches every **5 seconds** or when **1024** spans are queued, whichever comes first."
+difficulty: easy
+category: trace-processor
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Processing spans in batch","attributes":{"processor":"batch","timeout":"5s","batch_size":1024}}'
+  - '{"body":"Another batch of spans processed","attributes":{"processor":"batch","timeout":"5s","batch_size":1024}}'
+
+expectedBodies:
+  - "Processing spans in batch"
+  - "Another batch of spans processed"
+
+requiredProcessors:
+  - batch
+
+hints:
+  - "Add a `batch` processor to the `processors` section"
+  - "Set `timeout` to `5s`"
+  - "Set `send_batch_size` to `1024`"
+  - "Wire it into the pipeline processors"
+
+starterYaml: |
+  processors:
+    batch:
+
+  service:
+    pipelines:
+      logs:
+        processors: [batch]
+
+solutionProcessors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024

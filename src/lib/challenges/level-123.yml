@@ -1,0 +1,36 @@
+id: level-123
+title: Group by Service
+description: "Organize spans by service name using the **groupbyattrs** processor. Configure it to group spans by `service.name`, which creates separate resources for each unique service."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Span grouped under service api-gateway","attributes":{"processor":"groupbyattrs","key":"service.name","value":"api-gateway"}}'
+  - '{"body":"Span grouped under service auth-service","attributes":{"processor":"groupbyattrs","key":"service.name","value":"auth-service"}}'
+
+expectedBodies:
+  - "Span grouped under service api-gateway"
+  - "Span grouped under service auth-service"
+
+requiredProcessors:
+  - groupbyattrs
+
+hints:
+  - "Add a `groupbyattrs` processor"
+  - "Set `keys` to a list containing `service.name`"
+  - "This creates separate resource groups for each unique service name"
+
+starterYaml: |
+  processors:
+    groupbyattrs:
+
+  service:
+    pipelines:
+      logs:
+        processors: [groupbyattrs]
+
+solutionProcessors:
+  groupbyattrs:
+    keys:
+      - service.name

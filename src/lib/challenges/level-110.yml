@@ -1,0 +1,41 @@
+id: level-110
+title: OTLP TLS
+description: "Secure your trace ingestion with TLS. Configure the **OTLP receiver** with a TLS server certificate and key so clients can connect over encrypted gRPC."
+difficulty: medium
+category: trace-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Secure trace received via TLS gRPC","attributes":{"receiver":"otlp","tls":"enabled","signal":"traces"}}'
+
+expectedBodies:
+  - "Secure trace received via TLS gRPC"
+
+requiredReceivers:
+  - otlp
+
+hints:
+  - "Add a `tls_settings` section to the `otlp` receiver"
+  - "Set `cert_file` to `/etc/certs/server.crt`"
+  - "Set `key_file` to `/etc/certs/server.key`"
+  - "Wire into the pipeline receivers"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: [file]
+
+solutionReceivers:
+  otlp:
+    protocols:
+      grpc:
+        tls_settings:
+          cert_file: /etc/certs/server.crt
+          key_file: /etc/certs/server.key

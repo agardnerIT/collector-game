@@ -1,0 +1,37 @@
+id: level-115
+title: Tail Always Sample
+description: "Configure the **tail_sampling** processor with an `always_sample` policy to ensure every trace is kept. This is useful when you want to test sampling policies without losing data."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Trace kept by always_sample policy","attributes":{"processor":"tail_sampling","policy":"always_sample"}}'
+  - '{"body":"Another trace kept","attributes":{"processor":"tail_sampling","policy":"always_sample"}}'
+
+expectedBodies:
+  - "Trace kept by always_sample policy"
+  - "Another trace kept"
+
+requiredProcessors:
+  - tail_sampling
+
+hints:
+  - "Add a `tail_sampling` processor"
+  - "Set `policies` with a list containing an `always_sample` policy"
+  - "The `always_sample` policy needs no further config"
+
+starterYaml: |
+  processors:
+    tail_sampling:
+      policies:
+
+  service:
+    pipelines:
+      logs:
+        processors: [tail_sampling]
+
+solutionProcessors:
+  tail_sampling:
+    policies:
+      - type: always_sample

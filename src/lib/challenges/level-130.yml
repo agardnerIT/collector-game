@@ -1,0 +1,57 @@
+id: level-130
+title: Dual Export
+description: "Send traces to two backends simultaneously for redundancy. Configure a pipeline that ingests traces via `otlp` receiver and exports to both **otlp** (`https://traces-backend:4317`) and **kafka** (`kafka-broker:9092`, topic `traces`)."
+difficulty: medium
+category: trace-pipeline
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Trace fanned out to otlp and kafka","attributes":{"pipeline":"dual","exporters":["otlp","kafka"]}}'
+  - '{"body":"Another trace sent to both backends","attributes":{"pipeline":"dual","exporters":["otlp","kafka"]}}'
+
+expectedBodies:
+  - "Trace fanned out to otlp and kafka"
+  - "Another trace sent to both backends"
+
+requiredReceivers:
+  - otlp
+
+requiredExporters:
+  - otlp
+  - kafka
+
+hints:
+  - "Add `otlp` receiver with gRPC protocol"
+  - "Add both `otlp` and `kafka` exporters"
+  - "List both exporters in `service.pipelines.logs.exporters`"
+  - "The collector fans out to all listed exporters automatically"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+  exporters:
+    otlp:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: []
+
+solutionReceivers:
+  otlp:
+    protocols:
+      grpc:
+
+solutionExporters:
+  otlp:
+    endpoint: https://traces-backend:4317
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: traces
+    encoding: otlp_proto

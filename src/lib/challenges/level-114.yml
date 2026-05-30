@@ -1,0 +1,35 @@
+id: level-114
+title: Probabilistic Sampler
+description: "Reduce trace volume by sampling. Configure the **probabilistic_sampler** processor to sample **50%** of traces by hash, which keeps complete trace spans together (all or nothing per trace)."
+difficulty: easy
+category: trace-processor
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Trace sampled at 50% rate","attributes":{"processor":"probabilistic_sampler","sampling_percentage":50}}'
+  - '{"body":"Another trace processed","attributes":{"processor":"probabilistic_sampler","sampling_percentage":50}}'
+
+expectedBodies:
+  - "Trace sampled at 50% rate"
+  - "Another trace processed"
+
+requiredProcessors:
+  - probabilistic_sampler
+
+hints:
+  - "Add a `probabilistic_sampler` processor"
+  - "Set `sampling_percentage` to `50`"
+  - "The sampler uses trace ID hash to make consistent sampling decisions"
+
+starterYaml: |
+  processors:
+    probabilistic_sampler:
+
+  service:
+    pipelines:
+      logs:
+        processors: [probabilistic_sampler]
+
+solutionProcessors:
+  probabilistic_sampler:
+    sampling_percentage: 50

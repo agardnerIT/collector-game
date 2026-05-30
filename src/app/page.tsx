@@ -107,10 +107,6 @@ export default function HomePage() {
           className="mt-8 flex gap-4 text-sm font-semibold text-gray-400 dark:text-gray-500"
         >
           <span>{challenges.length} Challenges</span>
-          <span>•</span>
-          <span>Real Collector</span>
-          <span>•</span>
-          <span>Learn OTTL</span>
         </motion.div>
       </main>
     </div>

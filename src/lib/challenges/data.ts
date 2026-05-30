@@ -38,7 +38,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: user.email\n        action: delete\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-02",
@@ -80,7 +81,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - replace_pattern(body, \"\\\\d{16}\", \"[REDACTED]\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-03",
@@ -113,7 +115,8 @@ export const challenges: Challenge[] = [
           "/var/log/app.log"
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n"
   },
   {
     "id": "level-04",
@@ -152,7 +155,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  filter:\n    logs:\n      log_record:\n        - IsMatch(attributes[\"level\"], \"debug\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-05",
@@ -191,7 +195,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - set(attributes[\"environment\"], \"production\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-06",
@@ -222,7 +227,8 @@ export const challenges: Challenge[] = [
       "debug": {
         "verbosity": "detailed"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  debug:\n    verbosity: detailed\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - debug\n"
   },
   {
     "id": "level-07",
@@ -260,7 +266,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: user.email\n        action: hash\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-08",
@@ -309,7 +316,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: user.email\n        action: delete\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - replace_pattern(body, \"\\\\d{16}\", \"[REDACTED]\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n        - transform\n"
   },
   {
     "id": "level-09",
@@ -349,7 +357,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - 'extract_patterns(body, \"IP: (?P<ip>[^ |]+) \\\\| Status: (?P<status_code>[^ |]+)\")'\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-10",
@@ -394,7 +403,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    operators:\n      - type: regex_parser\n        regex: ^(?P<timestamp>\\S+) (?P<level>\\S+) (?P<message>.*)$\n        parse_from: body\n        parse_to: attributes\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-100",
@@ -422,7 +432,8 @@ export const challenges: Challenge[] = [
       "prometheusremotewrite": {
         "endpoint": "http://cortex:9009/api/v1/push"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  prometheusremotewrite:\n    endpoint: http://cortex:9009/api/v1/push\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheusremotewrite\n"
   },
   {
     "id": "level-101",
@@ -454,7 +465,8 @@ export const challenges: Challenge[] = [
           "Authorization": "Bearer my-token-123"
         }
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  prometheusremotewrite:\n    endpoint: http://cortex:9009/api/v1/push\n    headers:\n      Authorization: Bearer my-token-123\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheusremotewrite\n"
   },
   {
     "id": "level-102",
@@ -488,7 +500,8 @@ export const challenges: Challenge[] = [
         "bucket": "metrics",
         "token": "my-token"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  influxdb:\n    endpoint: http://influxdb:8086\n    org: myorg\n    bucket: metrics\n    token: my-token\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - influxdb\n"
   },
   {
     "id": "level-103",
@@ -518,7 +531,8 @@ export const challenges: Challenge[] = [
         "endpoint": "carbon-server:2003",
         "transport": "tcp"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  carbon:\n    endpoint: carbon-server:2003\n    transport: tcp\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - carbon\n"
   },
   {
     "id": "level-104",
@@ -569,7 +583,8 @@ export const challenges: Challenge[] = [
       "prometheus": {
         "endpoint": "0.0.0.0:8889"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      cpu: null\nprocessors:\n  filter:\n    metrics:\n      include:\n        match_type: regexp\n        metric_names:\n          - cpu.*\nexporters:\n  prometheus:\n    endpoint: 0.0.0.0:8889\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      processors:\n        - filter\n      exporters:\n        - prometheus\n"
   },
   {
     "id": "level-105",
@@ -613,7 +628,8 @@ export const challenges: Challenge[] = [
       "prometheus": {
         "endpoint": "0.0.0.0:8889"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      cpu: null\nprocessors:\n  cumulativetodelta: null\n  deltatorate: null\nexporters:\n  prometheus:\n    endpoint: 0.0.0.0:8889\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      processors: []\n      exporters:\n        - prometheus\n"
   },
   {
     "id": "level-106",
@@ -656,7 +672,8 @@ export const challenges: Challenge[] = [
         "bucket": "metrics",
         "token": "my-token"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      cpu: null\n      memory: null\nexporters:\n  prometheus:\n    endpoint: 0.0.0.0:8889\n  influxdb:\n    endpoint: http://influxdb:8086\n    org: myorg\n    bucket: metrics\n    token: my-token\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters: []\n"
   },
   {
     "id": "level-107",
@@ -727,7 +744,71 @@ export const challenges: Challenge[] = [
           "prometheus"
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /tmp/input.log\n    start_at: beginning\n    operators:\n      - type: json_parser\n  hostmetrics:\n    scrapers:\n      cpu: null\nexporters:\n  file:\n    path: ./output.json\n  prometheus:\n    endpoint: 0.0.0.0:8889\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n    metrics:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheus\n"
+  },
+  {
+    "id": "level-108",
+    "title": "OTLP gRPC",
+    "description": "Configure an **OTLP receiver** to accept traces over gRPC on the default port `4317`. The OTLP receiver is the standard way to ingest trace data from instrumented applications.",
+    "difficulty": "easy",
+    "category": "trace-receiver",
+    "basePoints": 100,
+    "inputLogs": [
+      "{\"body\":\"Received trace via gRPC on port 4317\",\"attributes\":{\"receiver\":\"otlp\",\"protocol\":\"grpc\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Received trace via gRPC on port 4317"
+    ],
+    "requiredReceivers": [
+      "otlp"
+    ],
+    "hints": [
+      "Add a `receivers` section with an `otlp` receiver",
+      "The OTLP receiver accepts `protocols` with `grpc` (enabled by default on port 4317)",
+      "Wire it into `service.pipelines.logs.receivers`"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [file]\n",
+    "solutionReceivers": {
+      "otlp": {
+        "protocols": {
+          "grpc": null
+        }
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc: null\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - file\n"
+  },
+  {
+    "id": "level-109",
+    "title": "OTLP HTTP",
+    "description": "In addition to gRPC, the OTLP receiver can accept traces over HTTP. Enable the HTTP protocol on port `4318` so applications that can't use gRPC can still send traces.",
+    "difficulty": "easy",
+    "category": "trace-receiver",
+    "basePoints": 100,
+    "inputLogs": [
+      "{\"body\":\"Received trace via HTTP on port 4318\",\"attributes\":{\"receiver\":\"otlp\",\"protocol\":\"http\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Received trace via HTTP on port 4318"
+    ],
+    "requiredReceivers": [
+      "otlp"
+    ],
+    "hints": [
+      "Add an `otlp` receiver with `protocols` section",
+      "Enable `http` protocol — it listens on port 4318 by default",
+      "Wire into the pipeline receivers"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [file]\n",
+    "solutionReceivers": {
+      "otlp": {
+        "protocols": {
+          "grpc": null,
+          "http": null
+        }
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc: null\n      http: null\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - file\n"
   },
   {
     "id": "level-11",
@@ -773,7 +854,381 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: user.email\n        action: delete\n        include:\n          match_type: expr\n          expressions:\n            - attributes[\"level\"] == \"info\"\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
+  },
+  {
+    "id": "level-110",
+    "title": "OTLP TLS",
+    "description": "Secure your trace ingestion with TLS. Configure the **OTLP receiver** with a TLS server certificate and key so clients can connect over encrypted gRPC.",
+    "difficulty": "medium",
+    "category": "trace-receiver",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Secure trace received via TLS gRPC\",\"attributes\":{\"receiver\":\"otlp\",\"tls\":\"enabled\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Secure trace received via TLS gRPC"
+    ],
+    "requiredReceivers": [
+      "otlp"
+    ],
+    "hints": [
+      "Add a `tls_settings` section to the `otlp` receiver",
+      "Set `cert_file` to `/etc/certs/server.crt`",
+      "Set `key_file` to `/etc/certs/server.key`",
+      "Wire into the pipeline receivers"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [file]\n",
+    "solutionReceivers": {
+      "otlp": {
+        "protocols": {
+          "grpc": {
+            "tls_settings": {
+              "cert_file": "/etc/certs/server.crt",
+              "key_file": "/etc/certs/server.key"
+            }
+          }
+        }
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n        tls_settings:\n          cert_file: /etc/certs/server.crt\n          key_file: /etc/certs/server.key\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - file\n"
+  },
+  {
+    "id": "level-111",
+    "title": "Kafka Consume",
+    "description": "Ingest traces from a Kafka topic. Configure the **kafka receiver** to consume trace data from the `traces` topic on `kafka-broker:9092` using `otlp_proto` encoding.",
+    "difficulty": "medium",
+    "category": "trace-receiver",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Consumed trace from kafka topic\",\"attributes\":{\"receiver\":\"kafka\",\"topic\":\"traces\",\"signal\":\"traces\"}}",
+      "{\"body\":\"Another trace message from kafka\",\"attributes\":{\"receiver\":\"kafka\",\"topic\":\"traces\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Consumed trace from kafka topic",
+      "Another trace message from kafka"
+    ],
+    "requiredReceivers": [
+      "kafka"
+    ],
+    "hints": [
+      "Add a `receivers` section with a `kafka` receiver",
+      "Set `brokers` to a list containing `kafka-broker:9092`",
+      "Set `topic` to `traces`",
+      "Set `encoding` to `otlp_proto`",
+      "Wire into the pipeline receivers"
+    ],
+    "starterYaml": "receivers:\n  kafka:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [kafka]\n      exporters: [file]\n",
+    "solutionReceivers": {
+      "kafka": {
+        "brokers": [
+          "kafka-broker:9092"
+        ],
+        "topic": "traces",
+        "encoding": "otlp_proto"
+      }
+    },
+    "solutionYaml": "receivers:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: traces\n    encoding: otlp_proto\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - kafka\n      exporters:\n        - file\n"
+  },
+  {
+    "id": "level-112",
+    "title": "Batch",
+    "description": "When processing high-volume traces, batching improves efficiency. Configure the **batch** processor to send batches every **5 seconds** or when **1024** spans are queued, whichever comes first.",
+    "difficulty": "easy",
+    "category": "trace-processor",
+    "basePoints": 100,
+    "inputLogs": [
+      "{\"body\":\"Processing spans in batch\",\"attributes\":{\"processor\":\"batch\",\"timeout\":\"5s\",\"batch_size\":1024}}",
+      "{\"body\":\"Another batch of spans processed\",\"attributes\":{\"processor\":\"batch\",\"timeout\":\"5s\",\"batch_size\":1024}}"
+    ],
+    "expectedBodies": [
+      "Processing spans in batch",
+      "Another batch of spans processed"
+    ],
+    "requiredProcessors": [
+      "batch"
+    ],
+    "hints": [
+      "Add a `batch` processor to the `processors` section",
+      "Set `timeout` to `5s`",
+      "Set `send_batch_size` to `1024`",
+      "Wire it into the pipeline processors"
+    ],
+    "starterYaml": "processors:\n  batch:\n\nservice:\n  pipelines:\n    logs:\n      processors: [batch]\n",
+    "solutionProcessors": {
+      "batch": {
+        "timeout": "5s",
+        "send_batch_size": 1024
+      }
+    },
+    "solutionYaml": "processors:\n  batch:\n    timeout: 5s\n    send_batch_size: 1024\nservice:\n  pipelines:\n    logs:\n      processors:\n        - batch\n"
+  },
+  {
+    "id": "level-113",
+    "title": "Memory Limiter",
+    "description": "Protect the Collector from memory exhaustion when processing traces. Configure the **memory_limiter** processor to check every **5 seconds** and enforce a hard limit of **512 MiB**.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Memory usage below limit\",\"attributes\":{\"processor\":\"memory_limiter\",\"limit_mib\":512,\"check_interval\":\"5s\"}}",
+      "{\"body\":\"High memory but within threshold\",\"attributes\":{\"processor\":\"memory_limiter\",\"limit_mib\":512,\"check_interval\":\"5s\"}}"
+    ],
+    "expectedBodies": [
+      "Memory usage below limit",
+      "High memory but within threshold"
+    ],
+    "requiredProcessors": [
+      "memory_limiter"
+    ],
+    "hints": [
+      "Add a `memory_limiter` processor to the `processors` section",
+      "Set `check_interval` to `5s`",
+      "Set `limit_mib` to `512`",
+      "Wire it into the pipeline processors"
+    ],
+    "starterYaml": "processors:\n  memory_limiter:\n\nservice:\n  pipelines:\n    logs:\n      processors: [memory_limiter]\n",
+    "solutionProcessors": {
+      "memory_limiter": {
+        "check_interval": "5s",
+        "limit_mib": 512
+      }
+    },
+    "solutionYaml": "processors:\n  memory_limiter:\n    check_interval: 5s\n    limit_mib: 512\nservice:\n  pipelines:\n    logs:\n      processors:\n        - memory_limiter\n"
+  },
+  {
+    "id": "level-114",
+    "title": "Probabilistic Sampler",
+    "description": "Reduce trace volume by sampling. Configure the **probabilistic_sampler** processor to sample **50%** of traces by hash, which keeps complete trace spans together (all or nothing per trace).",
+    "difficulty": "easy",
+    "category": "trace-processor",
+    "basePoints": 120,
+    "inputLogs": [
+      "{\"body\":\"Trace sampled at 50% rate\",\"attributes\":{\"processor\":\"probabilistic_sampler\",\"sampling_percentage\":50}}",
+      "{\"body\":\"Another trace processed\",\"attributes\":{\"processor\":\"probabilistic_sampler\",\"sampling_percentage\":50}}"
+    ],
+    "expectedBodies": [
+      "Trace sampled at 50% rate",
+      "Another trace processed"
+    ],
+    "requiredProcessors": [
+      "probabilistic_sampler"
+    ],
+    "hints": [
+      "Add a `probabilistic_sampler` processor",
+      "Set `sampling_percentage` to `50`",
+      "The sampler uses trace ID hash to make consistent sampling decisions"
+    ],
+    "starterYaml": "processors:\n  probabilistic_sampler:\n\nservice:\n  pipelines:\n    logs:\n      processors: [probabilistic_sampler]\n",
+    "solutionProcessors": {
+      "probabilistic_sampler": {
+        "sampling_percentage": 50
+      }
+    },
+    "solutionYaml": "processors:\n  probabilistic_sampler:\n    sampling_percentage: 50\nservice:\n  pipelines:\n    logs:\n      processors:\n        - probabilistic_sampler\n"
+  },
+  {
+    "id": "level-115",
+    "title": "Tail Always Sample",
+    "description": "Configure the **tail_sampling** processor with an `always_sample` policy to ensure every trace is kept. This is useful when you want to test sampling policies without losing data.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Trace kept by always_sample policy\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"always_sample\"}}",
+      "{\"body\":\"Another trace kept\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"always_sample\"}}"
+    ],
+    "expectedBodies": [
+      "Trace kept by always_sample policy",
+      "Another trace kept"
+    ],
+    "requiredProcessors": [
+      "tail_sampling"
+    ],
+    "hints": [
+      "Add a `tail_sampling` processor",
+      "Set `policies` with a list containing an `always_sample` policy",
+      "The `always_sample` policy needs no further config"
+    ],
+    "starterYaml": "processors:\n  tail_sampling:\n    policies:\n\nservice:\n  pipelines:\n    logs:\n      processors: [tail_sampling]\n",
+    "solutionProcessors": {
+      "tail_sampling": {
+        "policies": [
+          {
+            "type": "always_sample"
+          }
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  tail_sampling:\n    policies:\n      - type: always_sample\nservice:\n  pipelines:\n    logs:\n      processors:\n        - tail_sampling\n"
+  },
+  {
+    "id": "level-116",
+    "title": "Tail Numeric Attribute",
+    "description": "Sample traces based on an attribute value. Configure the **tail_sampling** processor to keep only traces where `http.status_code >= 400` (client and server errors), dropping successful requests.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 250,
+    "inputLogs": [
+      "{\"body\":\"Trace kept for status 500\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"numeric_attribute\",\"key\":\"http.status_code\",\"min_val\":400}}",
+      "{\"body\":\"Trace kept for status 404\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"numeric_attribute\",\"key\":\"http.status_code\",\"min_val\":400}}"
+    ],
+    "expectedBodies": [
+      "Trace kept for status 500",
+      "Trace kept for status 404"
+    ],
+    "requiredProcessors": [
+      "tail_sampling"
+    ],
+    "hints": [
+      "Add a `tail_sampling` processor with a `numeric_attribute` policy",
+      "Set `key` to `http.status_code`",
+      "Set `min_value` to `400`",
+      "Traces with status_code >= 400 are kept"
+    ],
+    "starterYaml": "processors:\n  tail_sampling:\n    policies:\n\nservice:\n  pipelines:\n    logs:\n      processors: [tail_sampling]\n",
+    "solutionProcessors": {
+      "tail_sampling": {
+        "policies": [
+          {
+            "type": "numeric_attribute",
+            "config": {
+              "key": "http.status_code",
+              "min_value": 400
+            }
+          }
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  tail_sampling:\n    policies:\n      - type: numeric_attribute\n        config:\n          key: http.status_code\n          min_value: 400\nservice:\n  pipelines:\n    logs:\n      processors:\n        - tail_sampling\n"
+  },
+  {
+    "id": "level-117",
+    "title": "Tail Composite Policy",
+    "description": "Combine multiple sampling conditions. Configure the **tail_sampling** processor with a composite policy: keep traces where `http.status_code >= 400` **OR** the trace duration is greater than `100ms`.",
+    "difficulty": "hard",
+    "category": "trace-processor",
+    "basePoints": 400,
+    "inputLogs": [
+      "{\"body\":\"Slow error trace kept by composite\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"composite\"}}",
+      "{\"body\":\"Fast error trace kept by composite\",\"attributes\":{\"processor\":\"tail_sampling\",\"policy\":\"composite\"}}"
+    ],
+    "expectedBodies": [
+      "Slow error trace kept by composite",
+      "Fast error trace kept by composite"
+    ],
+    "requiredProcessors": [
+      "tail_sampling"
+    ],
+    "hints": [
+      "Use the `composite` policy type in `tail_sampling`",
+      "Add `numeric_attribute` sub-policy for `http.status_code` with min 400",
+      "Add `latency` sub-policy with `threshold_ms: 100`",
+      "Composite policies combine with `AND` logic by default",
+      "Set `max_traces` to a high number to avoid dropping matched traces"
+    ],
+    "starterYaml": "processors:\n  tail_sampling:\n    policies:\n\nservice:\n  pipelines:\n    logs:\n      processors: [tail_sampling]\n",
+    "solutionProcessors": {
+      "tail_sampling": {
+        "policies": [
+          {
+            "type": "composite",
+            "config": {
+              "max_traces": 10000,
+              "policies": [
+                {
+                  "type": "numeric_attribute",
+                  "config": {
+                    "key": "http.status_code",
+                    "min_value": 400
+                  }
+                },
+                {
+                  "type": "latency",
+                  "config": {
+                    "threshold_ms": 100
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  tail_sampling:\n    policies:\n      - type: composite\n        config:\n          max_traces: 10000\n          policies:\n            - type: numeric_attribute\n              config:\n                key: http.status_code\n                min_value: 400\n            - type: latency\n              config:\n                threshold_ms: 100\nservice:\n  pipelines:\n    logs:\n      processors:\n        - tail_sampling\n"
+  },
+  {
+    "id": "level-118",
+    "title": "Insert Span Attribute",
+    "description": "Enrich spans with a new attribute. Use the **attributes** processor to `insert` an `environment` attribute set to `production` on every span passing through the pipeline.",
+    "difficulty": "easy",
+    "category": "trace-processor",
+    "basePoints": 120,
+    "inputLogs": [
+      "{\"body\":\"Span enriched with environment attribute\",\"attributes\":{\"processor\":\"attributes\",\"action\":\"insert\",\"key\":\"environment\",\"value\":\"production\"}}",
+      "{\"body\":\"Another span enriched\",\"attributes\":{\"processor\":\"attributes\",\"action\":\"insert\",\"key\":\"environment\",\"value\":\"production\"}}"
+    ],
+    "expectedBodies": [
+      "Span enriched with environment attribute",
+      "Another span enriched"
+    ],
+    "requiredProcessors": [
+      "attributes"
+    ],
+    "hints": [
+      "Use the `attributes` processor",
+      "Add an action with `action: insert`",
+      "Set `key` to `environment` and `value` to `production`"
+    ],
+    "starterYaml": "processors:\n  attributes:\n    actions:\n\nservice:\n  pipelines:\n    logs:\n      processors: [attributes]\n",
+    "solutionProcessors": {
+      "attributes": {
+        "actions": [
+          {
+            "key": "environment",
+            "value": "production",
+            "action": "insert"
+          }
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: environment\n        value: production\n        action: insert\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
+  },
+  {
+    "id": "level-119",
+    "title": "Filter by Status",
+    "description": "Only keep traces with successful HTTP responses. Configure the **filter** processor on the traces pipeline to drop spans where `span.status.code` is not equal to `OK`.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"OK span passed filter\",\"attributes\":{\"processor\":\"filter\",\"status\":\"OK\"}}",
+      "{\"body\":\"Another OK span\",\"attributes\":{\"processor\":\"filter\",\"status\":\"OK\"}}"
+    ],
+    "expectedBodies": [
+      "OK span passed filter",
+      "Another OK span"
+    ],
+    "requiredProcessors": [
+      "filter"
+    ],
+    "hints": [
+      "Use the `filter` processor with `traces` section",
+      "Use `span` context for conditions",
+      "Set `span.status.code != OK` to drop non-OK spans"
+    ],
+    "starterYaml": "processors:\n  filter:\n    traces:\n      span:\n\nservice:\n  pipelines:\n    logs:\n      processors: [filter]\n",
+    "solutionProcessors": {
+      "filter": {
+        "traces": {
+          "span": [
+            "span.status.code != OK"
+          ]
+        }
+      }
+    },
+    "solutionYaml": "processors:\n  filter:\n    traces:\n      span:\n        - span.status.code != OK\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-12",
@@ -827,7 +1282,378 @@ export const challenges: Challenge[] = [
       "file": {
         "path": "/tmp/clean-logs.json"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\nprocessors:\n  attributes:\n    actions:\n      - key: user.email\n        action: delete\nexporters:\n  file:\n    path: /tmp/clean-logs.json\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      processors:\n        - attributes\n      exporters:\n        - file\n"
+  },
+  {
+    "id": "level-120",
+    "title": "Rename via OTTL",
+    "description": "Use the **transform** processor with OTTL to rename spans. Set `span.name` to a new value `\"processed-span\"` for every span in the pipeline using the `set` function.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Original span name was /api/users\",\"attributes\":{\"processor\":\"transform\",\"original\":\"/api/users\",\"new\":\"processed-span\"}}",
+      "{\"body\":\"Original span name was /api/orders\",\"attributes\":{\"processor\":\"transform\",\"original\":\"/api/orders\",\"new\":\"processed-span\"}}"
+    ],
+    "expectedBodies": [
+      "Original span name was /api/users",
+      "Original span name was /api/orders"
+    ],
+    "requiredProcessors": [
+      "transform"
+    ],
+    "hints": [
+      "Use the `transform` processor with `trace_statements`",
+      "Set `context` to `span`",
+      "Use `set(span.name, \"processed-span\")`"
+    ],
+    "starterYaml": "processors:\n  transform:\n    trace_statements:\n      - context: span\n        statements:\n\nservice:\n  pipelines:\n    logs:\n      processors: [transform]\n",
+    "solutionProcessors": {
+      "transform": {
+        "trace_statements": [
+          {
+            "context": "span",
+            "statements": [
+              "set(span.name, \"processed-span\")"
+            ]
+          }
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  transform:\n    trace_statements:\n      - context: span\n        statements:\n          - set(span.name, \"processed-span\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
+  },
+  {
+    "id": "level-121",
+    "title": "K8s Enrich Spans",
+    "description": "When running in Kubernetes, spans can be enriched with pod metadata. Configure the **k8sattributes** processor to add `k8s.pod.name` and `k8s.namespace.name` to every span.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 250,
+    "inputLogs": [
+      "{\"body\":\"Span enriched with k8s metadata\",\"attributes\":{\"processor\":\"k8sattributes\",\"pod\":\"api-pod-7d4f\",\"namespace\":\"production\"}}",
+      "{\"body\":\"Another span with k8s metadata\",\"attributes\":{\"processor\":\"k8sattributes\",\"pod\":\"worker-2a3b\",\"namespace\":\"staging\"}}"
+    ],
+    "expectedBodies": [
+      "Span enriched with k8s metadata",
+      "Another span with k8s metadata"
+    ],
+    "requiredProcessors": [
+      "k8sattributes"
+    ],
+    "hints": [
+      "Add a `k8sattributes` processor",
+      "Set `extract` with `metadata` list",
+      "Add `k8s.pod.name` and `k8s.namespace.name` to extract",
+      "Wire into the pipeline processors"
+    ],
+    "starterYaml": "processors:\n  k8sattributes:\n\nservice:\n  pipelines:\n    logs:\n      processors: [k8sattributes]\n",
+    "solutionProcessors": {
+      "k8sattributes": {
+        "extract": {
+          "metadata": [
+            "k8s.pod.name",
+            "k8s.namespace.name"
+          ]
+        }
+      }
+    },
+    "solutionYaml": "processors:\n  k8sattributes:\n    extract:\n      metadata:\n        - k8s.pod.name\n        - k8s.namespace.name\nservice:\n  pipelines:\n    logs:\n      processors:\n        - k8sattributes\n"
+  },
+  {
+    "id": "level-122",
+    "title": "Resource Detection",
+    "description": "Enrich trace spans with environment metadata using the **resourcedetection** processor. Configure it to detect the environment using the `env` detector, which reads `OTEL_RESOURCE_ATTRIBUTES`.",
+    "difficulty": "easy",
+    "category": "trace-processor",
+    "basePoints": 120,
+    "inputLogs": [
+      "{\"body\":\"Span enriched with resource attributes\",\"attributes\":{\"processor\":\"resourcedetection\",\"detector\":\"env\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Span enriched with resource attributes"
+    ],
+    "requiredProcessors": [
+      "resourcedetection"
+    ],
+    "hints": [
+      "Add a `resourcedetection` processor",
+      "Set `detectors` to a list containing `env`",
+      "The `env` detector reads `OTEL_RESOURCE_ATTRIBUTES` from the environment"
+    ],
+    "starterYaml": "processors:\n  resourcedetection:\n\nservice:\n  pipelines:\n    logs:\n      processors: [resourcedetection]\n",
+    "solutionProcessors": {
+      "resourcedetection": {
+        "detectors": [
+          "env"
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  resourcedetection:\n    detectors:\n      - env\nservice:\n  pipelines:\n    logs:\n      processors:\n        - resourcedetection\n"
+  },
+  {
+    "id": "level-123",
+    "title": "Group by Service",
+    "description": "Organize spans by service name using the **groupbyattrs** processor. Configure it to group spans by `service.name`, which creates separate resources for each unique service.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Span grouped under service api-gateway\",\"attributes\":{\"processor\":\"groupbyattrs\",\"key\":\"service.name\",\"value\":\"api-gateway\"}}",
+      "{\"body\":\"Span grouped under service auth-service\",\"attributes\":{\"processor\":\"groupbyattrs\",\"key\":\"service.name\",\"value\":\"auth-service\"}}"
+    ],
+    "expectedBodies": [
+      "Span grouped under service api-gateway",
+      "Span grouped under service auth-service"
+    ],
+    "requiredProcessors": [
+      "groupbyattrs"
+    ],
+    "hints": [
+      "Add a `groupbyattrs` processor",
+      "Set `keys` to a list containing `service.name`",
+      "This creates separate resource groups for each unique service name"
+    ],
+    "starterYaml": "processors:\n  groupbyattrs:\n\nservice:\n  pipelines:\n    logs:\n      processors: [groupbyattrs]\n",
+    "solutionProcessors": {
+      "groupbyattrs": {
+        "keys": [
+          "service.name"
+        ]
+      }
+    },
+    "solutionYaml": "processors:\n  groupbyattrs:\n    keys:\n      - service.name\nservice:\n  pipelines:\n    logs:\n      processors:\n        - groupbyattrs\n"
+  },
+  {
+    "id": "level-124",
+    "title": "Filter by Error",
+    "description": "Keep only error spans for focused observability. Configure the **filter** processor to only keep spans where `span.status.code == ERROR`, dropping all successful spans.",
+    "difficulty": "medium",
+    "category": "trace-processor",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"ERROR span: database connection failed\",\"attributes\":{\"processor\":\"filter\",\"status\":\"ERROR\"}}",
+      "{\"body\":\"ERROR span: payment declined\",\"attributes\":{\"processor\":\"filter\",\"status\":\"ERROR\"}}"
+    ],
+    "expectedBodies": [
+      "ERROR span: database connection failed",
+      "ERROR span: payment declined"
+    ],
+    "requiredProcessors": [
+      "filter"
+    ],
+    "hints": [
+      "Use the `filter` processor with `traces` section",
+      "Use `span` context with `span.status.code == ERROR`",
+      "Only error spans will pass through"
+    ],
+    "starterYaml": "processors:\n  filter:\n    traces:\n      span:\n\nservice:\n  pipelines:\n    logs:\n      processors: [filter]\n",
+    "solutionProcessors": {
+      "filter": {
+        "traces": {
+          "span": [
+            "span.status.code == ERROR"
+          ]
+        }
+      }
+    },
+    "solutionYaml": "processors:\n  filter:\n    traces:\n      span:\n        - span.status.code == ERROR\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
+  },
+  {
+    "id": "level-125",
+    "title": "OTLP Export",
+    "description": "Ship trace data to a backend using the standard **OTLP exporter**. Configure it to send traces to `https://traces-backend:4317` via gRPC.",
+    "difficulty": "easy",
+    "category": "trace-exporter",
+    "basePoints": 100,
+    "inputLogs": [
+      "{\"body\":\"Trace exported via OTLP to backend\",\"attributes\":{\"exporter\":\"otlp\",\"endpoint\":\"traces-backend:4317\",\"signal\":\"traces\"}}",
+      "{\"body\":\"Another trace exported\",\"attributes\":{\"exporter\":\"otlp\",\"endpoint\":\"traces-backend:4317\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Trace exported via OTLP to backend",
+      "Another trace exported"
+    ],
+    "requiredExporters": [
+      "otlp"
+    ],
+    "hints": [
+      "Add an `exporters` section with an `otlp` exporter",
+      "Set `endpoint` to `https://traces-backend:4317`",
+      "Wire it into `service.pipelines.logs.exporters`"
+    ],
+    "starterYaml": "exporters:\n  otlp:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [otlp]\n",
+    "solutionExporters": {
+      "otlp": {
+        "endpoint": "https://traces-backend:4317"
+      }
+    },
+    "solutionYaml": "exporters:\n  otlp:\n    endpoint: https://traces-backend:4317\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - otlp\n"
+  },
+  {
+    "id": "level-126",
+    "title": "GCP Trace",
+    "description": "Export traces to Google Cloud Trace. Configure the **googlecloud** exporter with `project_id: my-project` and the `trace` service to send spans to GCP.",
+    "difficulty": "medium",
+    "category": "trace-exporter",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Trace exported to GCP Cloud Trace\",\"attributes\":{\"exporter\":\"googlecloud\",\"project\":\"my-project\",\"service\":\"trace\"}}",
+      "{\"body\":\"Another trace sent to GCP\",\"attributes\":{\"exporter\":\"googlecloud\",\"project\":\"my-project\",\"service\":\"trace\"}}"
+    ],
+    "expectedBodies": [
+      "Trace exported to GCP Cloud Trace",
+      "Another trace sent to GCP"
+    ],
+    "requiredExporters": [
+      "googlecloud"
+    ],
+    "hints": [
+      "Add a `googlecloud` exporter to the `exporters` section",
+      "Set `project_id` to `my-project`",
+      "The exporter handles auth via ADC (Application Default Credentials)",
+      "Wire it into the pipeline exporters"
+    ],
+    "starterYaml": "exporters:\n  googlecloud:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [googlecloud]\n",
+    "solutionExporters": {
+      "googlecloud": {
+        "project_id": "my-project"
+      }
+    },
+    "solutionYaml": "exporters:\n  googlecloud:\n    project_id: my-project\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - googlecloud\n"
+  },
+  {
+    "id": "level-127",
+    "title": "Kafka Export",
+    "description": "Export traces to Kafka for async processing or multi-destination fan-out. Configure the **kafka exporter** to send traces to `kafka-broker:9092` on topic `traces` with `otlp_proto` encoding.",
+    "difficulty": "medium",
+    "category": "trace-exporter",
+    "basePoints": 200,
+    "inputLogs": [
+      "{\"body\":\"Trace published to kafka topic\",\"attributes\":{\"exporter\":\"kafka\",\"topic\":\"traces\",\"broker\":\"kafka-broker:9092\"}}",
+      "{\"body\":\"Another trace message published\",\"attributes\":{\"exporter\":\"kafka\",\"topic\":\"traces\",\"broker\":\"kafka-broker:9092\"}}"
+    ],
+    "expectedBodies": [
+      "Trace published to kafka topic",
+      "Another trace message published"
+    ],
+    "requiredExporters": [
+      "kafka"
+    ],
+    "hints": [
+      "Add a `kafka` exporter to the `exporters` section",
+      "Set `brokers` to a list containing `kafka-broker:9092`",
+      "Set `topic` to `traces`",
+      "Set `encoding` to `otlp_proto`",
+      "Wire into the pipeline exporters"
+    ],
+    "starterYaml": "exporters:\n  kafka:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [kafka]\n",
+    "solutionExporters": {
+      "kafka": {
+        "brokers": [
+          "kafka-broker:9092"
+        ],
+        "topic": "traces",
+        "encoding": "otlp_proto"
+      }
+    },
+    "solutionYaml": "exporters:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: traces\n    encoding: otlp_proto\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - kafka\n"
+  },
+  {
+    "id": "level-128",
+    "title": "AWS X-Ray",
+    "description": "Export traces to AWS X-Ray for cloud-native distributed tracing. Configure the **awsxray** exporter with `region: us-west-2` to send spans to AWS.",
+    "difficulty": "hard",
+    "category": "trace-exporter",
+    "basePoints": 300,
+    "inputLogs": [
+      "{\"body\":\"Trace sent to AWS X-Ray in us-west-2\",\"attributes\":{\"exporter\":\"awsxray\",\"region\":\"us-west-2\"}}",
+      "{\"body\":\"Another trace indexed in X-Ray\",\"attributes\":{\"exporter\":\"awsxray\",\"region\":\"us-west-2\"}}"
+    ],
+    "expectedBodies": [
+      "Trace sent to AWS X-Ray in us-west-2",
+      "Another trace indexed in X-Ray"
+    ],
+    "requiredExporters": [
+      "awsxray"
+    ],
+    "hints": [
+      "Add an `awsxray` exporter to the `exporters` section",
+      "Set `region` to `us-west-2`",
+      "AWS credentials are resolved via the default credential chain",
+      "Wire into the pipeline exporters"
+    ],
+    "starterYaml": "exporters:\n  awsxray:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: [awsxray]\n",
+    "solutionExporters": {
+      "awsxray": {
+        "region": "us-west-2"
+      }
+    },
+    "solutionYaml": "exporters:\n  awsxray:\n    region: us-west-2\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters:\n        - awsxray\n"
+  },
+  {
+    "id": "level-129",
+    "title": "Full Trace Pipeline",
+    "description": "Build a complete trace pipeline. Configure `otlp` receiver → `batch` processor → `tail_sampling` processor (keep status >= 400) → `otlp` exporter. This is a production-ready trace processing pipeline.",
+    "difficulty": "medium",
+    "category": "trace-pipeline",
+    "basePoints": 300,
+    "inputLogs": [
+      "{\"body\":\"Trace processed through full pipeline\",\"attributes\":{\"pipeline\":\"trace\",\"receivers\":[\"otlp\"],\"processors\":[\"batch\",\"tail_sampling\"],\"exporters\":[\"otlp\"]}}",
+      "{\"body\":\"Another trace through the pipeline\",\"attributes\":{\"pipeline\":\"trace\",\"receivers\":[\"otlp\"],\"processors\":[\"batch\",\"tail_sampling\"],\"exporters\":[\"otlp\"]}}"
+    ],
+    "expectedBodies": [
+      "Trace processed through full pipeline",
+      "Another trace through the pipeline"
+    ],
+    "requiredReceivers": [
+      "otlp"
+    ],
+    "requiredProcessors": [
+      "batch",
+      "tail_sampling"
+    ],
+    "requiredExporters": [
+      "otlp"
+    ],
+    "hints": [
+      "Add `otlp` receiver with gRPC protocol",
+      "Add `batch` processor with timeout and batch size",
+      "Add `tail_sampling` with `numeric_attribute` policy on `http.status_code` (min 400)",
+      "Add `otlp` exporter to send to backend",
+      "Wire all four together in the pipeline"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n\nprocessors:\n  batch:\n  tail_sampling:\n    policies:\n\nexporters:\n  otlp:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      processors: []\n      exporters: [otlp]\n",
+    "solutionReceivers": {
+      "otlp": {
+        "protocols": {
+          "grpc": null
+        }
+      }
+    },
+    "solutionProcessors": {
+      "batch": {
+        "timeout": "5s",
+        "send_batch_size": 1024
+      },
+      "tail_sampling": {
+        "policies": [
+          {
+            "type": "numeric_attribute",
+            "config": {
+              "key": "http.status_code",
+              "min_value": 400
+            }
+          }
+        ]
+      }
+    },
+    "solutionExporters": {
+      "otlp": {
+        "endpoint": "https://traces-backend:4317"
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc: null\nprocessors:\n  batch:\n    timeout: 5s\n    send_batch_size: 1024\n  tail_sampling:\n    policies:\n      - type: numeric_attribute\n        config:\n          key: http.status_code\n          min_value: 400\nexporters:\n  otlp:\n    endpoint: https://traces-backend:4317\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      processors: []\n      exporters:\n        - otlp\n"
   },
   {
     "id": "level-13",
@@ -867,7 +1693,189 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - replace_match(attributes[\"env\"], \"staging-*\", \"dev\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
+  },
+  {
+    "id": "level-130",
+    "title": "Dual Export",
+    "description": "Send traces to two backends simultaneously for redundancy. Configure a pipeline that ingests traces via `otlp` receiver and exports to both **otlp** (`https://traces-backend:4317`) and **kafka** (`kafka-broker:9092`, topic `traces`).",
+    "difficulty": "medium",
+    "category": "trace-pipeline",
+    "basePoints": 300,
+    "inputLogs": [
+      "{\"body\":\"Trace fanned out to otlp and kafka\",\"attributes\":{\"pipeline\":\"dual\",\"exporters\":[\"otlp\",\"kafka\"]}}",
+      "{\"body\":\"Another trace sent to both backends\",\"attributes\":{\"pipeline\":\"dual\",\"exporters\":[\"otlp\",\"kafka\"]}}"
+    ],
+    "expectedBodies": [
+      "Trace fanned out to otlp and kafka",
+      "Another trace sent to both backends"
+    ],
+    "requiredReceivers": [
+      "otlp"
+    ],
+    "requiredExporters": [
+      "otlp",
+      "kafka"
+    ],
+    "hints": [
+      "Add `otlp` receiver with gRPC protocol",
+      "Add both `otlp` and `kafka` exporters",
+      "List both exporters in `service.pipelines.logs.exporters`",
+      "The collector fans out to all listed exporters automatically"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n\nexporters:\n  otlp:\n  kafka:\n\nservice:\n  pipelines:\n    logs:\n      receivers: [otlp]\n      exporters: []\n",
+    "solutionReceivers": {
+      "otlp": {
+        "protocols": {
+          "grpc": null
+        }
+      }
+    },
+    "solutionExporters": {
+      "otlp": {
+        "endpoint": "https://traces-backend:4317"
+      },
+      "kafka": {
+        "brokers": [
+          "kafka-broker:9092"
+        ],
+        "topic": "traces",
+        "encoding": "otlp_proto"
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc: null\nexporters:\n  otlp:\n    endpoint: https://traces-backend:4317\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: traces\n    encoding: otlp_proto\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlp\n      exporters: []\n"
+  },
+  {
+    "id": "level-131",
+    "title": "Span Metrics Connector",
+    "description": "Generate metrics from trace spans using the **spanmetrics** connector. Configure a traces pipeline that feeds into a metrics pipeline via the connector, producing metrics like `calls_total` and `duration` from incoming spans.",
+    "difficulty": "hard",
+    "category": "trace-pipeline",
+    "basePoints": 500,
+    "inputLogs": [
+      "{\"body\":\"Span converted to metrics via spanmetrics connector\",\"attributes\":{\"connector\":\"spanmetrics\",\"signal\":\"traces\"}}",
+      "{\"body\":\"Another span converted to metrics\",\"attributes\":{\"connector\":\"spanmetrics\",\"signal\":\"traces\"}}"
+    ],
+    "expectedBodies": [
+      "Span converted to metrics via spanmetrics connector",
+      "Another span converted to metrics"
+    ],
+    "hints": [
+      "Add a `spanmetrics` connector in the `connectors` section",
+      "Create a `traces` pipeline with `otlp` receiver and `spanmetrics` exporter",
+      "Create a `metrics` pipeline with `spanmetrics` receiver and `prometheus` exporter",
+      "The connector bridges the two pipelines"
+    ],
+    "starterYaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n\nconnectors:\n  spanmetrics:\n\nexporters:\n  prometheus:\n\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp]\n      exporters: [spanmetrics]\n    metrics:\n      receivers: [spanmetrics]\n      exporters: [prometheus]\n",
+    "solutionConnectors": {
+      "spanmetrics": null
+    },
+    "solutionPipelines": {
+      "traces": {
+        "receivers": [
+          "otlp"
+        ],
+        "exporters": [
+          "spanmetrics"
+        ]
+      },
+      "metrics": {
+        "receivers": [
+          "spanmetrics"
+        ],
+        "exporters": [
+          "prometheus"
+        ]
+      }
+    },
+    "solutionYaml": "receivers:\n  otlp:\n    protocols:\n      grpc: null\nconnectors:\n  spanmetrics: null\nexporters:\n  prometheus: null\nservice:\n  pipelines:\n    traces:\n      receivers:\n        - otlp\n      exporters:\n        - spanmetrics\n    metrics:\n      receivers:\n        - spanmetrics\n      exporters:\n        - prometheus\n"
+  },
+  {
+    "id": "level-132",
+    "title": "Logs + Metrics + Traces",
+    "description": "Run all three signal pipelines in a single Collector config. Configure **filelog** (logs) → **file** exporter, **hostmetrics** (metrics) → **prometheus** exporter, and **otlp** (traces) → **otlp** exporter. Each signal gets its own pipeline.",
+    "difficulty": "hard",
+    "category": "trace-pipeline",
+    "basePoints": 500,
+    "inputLogs": [
+      "{\"body\":\"Log entry from filelog receiver\",\"attributes\":{\"signal\":\"logs\"}}",
+      "{\"body\":\"hostmetrics cpu 0.5\",\"attributes\":{\"signal\":\"metrics\",\"metric\":\"cpu\"}}",
+      "{\"body\":\"Trace span from otlp receiver\",\"attributes\":{\"signal\":\"traces\",\"trace_id\":\"abc123\"}}"
+    ],
+    "expectedBodies": [
+      "Log entry from filelog receiver",
+      "hostmetrics cpu 0.5",
+      "Trace span from otlp receiver"
+    ],
+    "hints": [
+      "Add three receivers: `filelog`, `hostmetrics`, `otlp`",
+      "Add three exporters: `file`, `prometheus`, `otlp`",
+      "Create three pipelines under `service.pipelines`: `logs`, `metrics`, `traces`",
+      "Each pipeline wires its corresponding receiver to its exporter"
+    ],
+    "starterYaml": "receivers:\n  filelog:\n    include: [/var/log/app.log]\n    start_at: beginning\n    operators:\n      - type: json_parser\n  hostmetrics:\n    scrapers:\n      cpu:\n  otlp:\n    protocols:\n      grpc:\n\nexporters:\n  file:\n    path: ./output.json\n  prometheus:\n  otlp:\n\nservice:\n  pipelines:\n",
+    "solutionReceivers": {
+      "filelog": {
+        "include": [
+          "/var/log/app.log"
+        ],
+        "start_at": "beginning",
+        "operators": [
+          {
+            "type": "json_parser"
+          }
+        ]
+      },
+      "hostmetrics": {
+        "scrapers": {
+          "cpu": null
+        }
+      },
+      "otlp": {
+        "protocols": {
+          "grpc": null
+        }
+      }
+    },
+    "solutionExporters": {
+      "file": {
+        "path": "./output.json"
+      },
+      "prometheus": {
+        "endpoint": "0.0.0.0:8889"
+      },
+      "otlp": {
+        "endpoint": "https://traces-backend:4317"
+      }
+    },
+    "solutionPipelines": {
+      "logs": {
+        "receivers": [
+          "filelog"
+        ],
+        "exporters": [
+          "file"
+        ]
+      },
+      "metrics": {
+        "receivers": [
+          "hostmetrics"
+        ],
+        "exporters": [
+          "prometheus"
+        ]
+      },
+      "traces": {
+        "receivers": [
+          "otlp"
+        ],
+        "exporters": [
+          "otlp"
+        ]
+      }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    operators:\n      - type: json_parser\n  hostmetrics:\n    scrapers:\n      cpu: null\n  otlp:\n    protocols:\n      grpc: null\nexporters:\n  file:\n    path: ./output.json\n  prometheus:\n    endpoint: 0.0.0.0:8889\n  otlp:\n    endpoint: https://traces-backend:4317\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n    metrics:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheus\n    traces:\n      receivers:\n        - otlp\n      exporters:\n        - otlp\n"
   },
   {
     "id": "level-14",
@@ -907,7 +1915,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - truncate_all(body, 20)\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-15",
@@ -947,7 +1956,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - set(attributes[\"tags_array\"], Split(attributes[\"tags\"], \",\"))\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-16",
@@ -982,7 +1992,8 @@ export const challenges: Challenge[] = [
           "level"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    keep_keys:\n      - level\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-17",
@@ -1020,7 +2031,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - flatten(attributes[\"metadata\"], \".\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-18",
@@ -1054,7 +2066,8 @@ export const challenges: Challenge[] = [
         "timeout": "5s",
         "send_batch_size": 1024
       }
-    }
+    },
+    "solutionYaml": "processors:\n  batch:\n    timeout: 5s\n    send_batch_size: 1024\nservice:\n  pipelines:\n    logs:\n      processors:\n        - batch\n"
   },
   {
     "id": "level-19",
@@ -1088,7 +2101,8 @@ export const challenges: Challenge[] = [
         "check_interval": "5s",
         "limit_mib": 512
       }
-    }
+    },
+    "solutionYaml": "processors:\n  memory_limiter:\n    check_interval: 5s\n    limit_mib: 512\nservice:\n  pipelines:\n    logs:\n      processors:\n        - memory_limiter\n"
   },
   {
     "id": "level-20",
@@ -1123,7 +2137,8 @@ export const challenges: Challenge[] = [
           "ecs"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  resourcedetection:\n    detectors:\n      - env\n      - gcp\n      - ecs\nservice:\n  pipelines:\n    logs:\n      processors:\n        - resourcedetection\n"
   },
   {
     "id": "level-21",
@@ -1154,7 +2169,8 @@ export const challenges: Challenge[] = [
       "otlp": {
         "endpoint": "https://my-otel-backend:4317"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  otlp:\n    endpoint: https://my-otel-backend:4317\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - otlp\n"
   },
   {
     "id": "level-22",
@@ -1185,7 +2201,8 @@ export const challenges: Challenge[] = [
       "loki": {
         "endpoint": "https://loki.example.com:3100/loki/api/v1/push"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  loki:\n    endpoint: https://loki.example.com:3100/loki/api/v1/push\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - loki\n"
   },
   {
     "id": "level-23",
@@ -1219,7 +2236,8 @@ export const challenges: Challenge[] = [
         },
         "protocol": "rfc5424"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  syslog:\n    tcp:\n      listen_address: 0.0.0.0:514\n    protocol: rfc5424\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - syslog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-24",
@@ -1251,7 +2269,8 @@ export const challenges: Challenge[] = [
     },
     "serviceExtensions": [
       "health_check"
-    ]
+    ],
+    "solutionYaml": "extensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nservice:\n  extensions:\n    - health_check\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-25",
@@ -1336,7 +2355,8 @@ export const challenges: Challenge[] = [
           "file/important"
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\nprocessors:\n  filter:\n    logs:\n      log_record:\n        - IsMatch(attributes[\"level\"], \"debug\")\n  attributes:\n    actions:\n      - key: user.email\n        action: hash\nexporters:\n  file/normal:\n    path: /tmp/normal-logs.json\n  file/important:\n    path: /tmp/important-logs.json\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      processors:\n        - filter\n        - attributes\n      exporters:\n        - file/normal\n    logs/important:\n      receivers:\n        - filelog\n      processors:\n        - attributes\n      exporters:\n        - file/important\n"
   },
   {
     "id": "level-26",
@@ -1402,7 +2422,8 @@ export const challenges: Challenge[] = [
           "file/errors"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  routing:\n    table:\n      - statement: route()\nexporters:\n  file/normal:\n    path: /tmp/normal-logs.json\n  file/errors:\n    path: /tmp/error-logs.json\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      processors:\n        - routing\n      exporters:\n        - file/normal\n    logs/errors:\n      receivers:\n        - filelog\n      processors: []\n      exporters:\n        - file/errors\n"
   },
   {
     "id": "level-27",
@@ -1455,7 +2476,8 @@ export const challenges: Challenge[] = [
           "file"
         ]
       }
-    }
+    },
+    "solutionYaml": "connectors:\n  count:\n    logs:\n      metric_description: Count of log records by severity\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - count\n        - file\n    logs/counts:\n      receivers:\n        - count\n      exporters:\n        - file\n"
   },
   {
     "id": "level-28",
@@ -1498,7 +2520,8 @@ export const challenges: Challenge[] = [
           "line_start_pattern": "^\\d{4}-\\d{2}-\\d{2}"
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    multiline:\n      line_start_pattern: ^\\d{4}-\\d{2}-\\d{2}\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-29",
@@ -1539,7 +2562,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - set(attributes[\"parsed\"], parse_json(body))\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-30",
@@ -1576,7 +2600,8 @@ export const challenges: Challenge[] = [
           "timestamp"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  redaction:\n    allowed_keys:\n      - level\n      - message\n      - timestamp\nservice:\n  pipelines:\n    logs:\n      processors:\n        - redaction\n"
   },
   {
     "id": "level-31",
@@ -1612,7 +2637,8 @@ export const challenges: Challenge[] = [
           "\\\\d{16}"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  redaction:\n    allow_all_keys: true\n    blocked_values:\n      - \\\\d{16}\nservice:\n  pipelines:\n    logs:\n      processors:\n        - redaction\n"
   },
   {
     "id": "level-32",
@@ -1651,7 +2677,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  redaction:\n    allow_all_keys: true\n    url_sanitizer:\n      enabled: true\n      attributes:\n        - http.url\nservice:\n  pipelines:\n    logs:\n      processors:\n        - redaction\n"
   },
   {
     "id": "level-33",
@@ -1688,7 +2715,8 @@ export const challenges: Challenge[] = [
           "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  redaction:\n    allow_all_keys: true\n    hash_function: sha256\n    blocked_values:\n      - (?:[0-9]{1,3}\\.){3}[0-9]{1,3}\nservice:\n  pipelines:\n    logs:\n      processors:\n        - redaction\n"
   },
   {
     "id": "level-34",
@@ -1729,7 +2757,8 @@ export const challenges: Challenge[] = [
           }
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  redaction:\n    allow_all_keys: true\n    db_sanitizer:\n      sql:\n        enabled: true\n        attributes:\n          - db.statement\nservice:\n  pipelines:\n    logs:\n      processors:\n        - redaction\n"
   },
   {
     "id": "level-35",
@@ -1764,7 +2793,8 @@ export const challenges: Challenge[] = [
       "log_dedup": {
         "interval": "30s"
       }
-    }
+    },
+    "solutionYaml": "processors:\n  log_dedup:\n    interval: 30s\nservice:\n  pipelines:\n    logs:\n      processors:\n        - log_dedup\n"
   },
   {
     "id": "level-36",
@@ -1802,7 +2832,8 @@ export const challenges: Challenge[] = [
           "attributes.error_code"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  log_dedup:\n    interval: 30s\n    include_fields:\n      - attributes.error_code\nservice:\n  pipelines:\n    logs:\n      processors:\n        - log_dedup\n"
   },
   {
     "id": "level-37",
@@ -1841,7 +2872,8 @@ export const challenges: Challenge[] = [
           "log.attributes[\"level\"] == \"error\""
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  log_dedup:\n    interval: 30s\n    conditions:\n      - log.attributes[\"level\"] == \"error\"\nservice:\n  pipelines:\n    logs:\n      processors:\n        - log_dedup\n"
   },
   {
     "id": "level-38",
@@ -1880,7 +2912,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: environment\n        value: production\n        action: insert\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-39",
@@ -1919,7 +2952,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: datacenter\n        value: us-east-1\n        action: upsert\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-40",
@@ -1958,7 +2992,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: version\n        pattern: v(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<tag>\\w+))?\n        action: extract\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-41",
@@ -1997,7 +3032,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  attributes:\n    actions:\n      - key: http.status_code\n        action: convert\n        converted_type: int\nservice:\n  pipelines:\n    logs:\n      processors:\n        - attributes\n"
   },
   {
     "id": "level-42",
@@ -2037,7 +3073,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - merge_maps(log.attributes, ParseJSON(log.body), \"upsert\") where IsMatch(log.body, \"^\\\\{\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-43",
@@ -2077,7 +3114,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - set(log.attributes[\"full_name\"], Concat([log.attributes[\"first_name\"], log.attributes[\"last_name\"]], \" \"))\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-44",
@@ -2117,7 +3155,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - replace_all_matches(log.attributes, \"/user/*/*\", \"/user/{id}/{action}\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-45",
@@ -2155,7 +3194,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - keep_matching_keys(log.attributes, \"k8s.*\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-46",
@@ -2193,7 +3233,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - limit(log.attributes, 5, [])\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-47",
@@ -2231,7 +3272,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    log_statements:\n      - context: log\n        statements:\n          - delete_matching_keys(log.attributes, \"(?i).*(token|secret|password).*\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-48",
@@ -2267,7 +3309,8 @@ export const challenges: Challenge[] = [
           "IsMatch(log.body, \"(?i)debug\")"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  filter:\n    error_mode: ignore\n    log_conditions:\n      - IsMatch(log.body, \"(?i)debug\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-49",
@@ -2304,7 +3347,8 @@ export const challenges: Challenge[] = [
           "log.severity_number < SEVERITY_NUMBER_WARN"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  filter:\n    error_mode: ignore\n    log_conditions:\n      - log.severity_number < SEVERITY_NUMBER_WARN\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-50",
@@ -2334,7 +3378,8 @@ export const challenges: Challenge[] = [
         "endpoint": "0.0.0.0:8080",
         "path": "/events"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  webhookevent:\n    endpoint: 0.0.0.0:8080\n    path: /events\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - webhookevent\n      exporters:\n        - file\n"
   },
   {
     "id": "level-51",
@@ -2368,7 +3413,8 @@ export const challenges: Challenge[] = [
           "hits_per_second": 100
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  webhookevent:\n    endpoint: 0.0.0.0:8080\n    path: /events\n    rate_limit:\n      enabled: true\n      hits_per_second: 100\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - webhookevent\n      exporters:\n        - file\n"
   },
   {
     "id": "level-52",
@@ -2400,7 +3446,8 @@ export const challenges: Challenge[] = [
           "token": "my-secret-token"
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  webhookevent:\n    endpoint: 0.0.0.0:8080\n    path: /events\n    auth:\n      type: bearer\n      token: my-secret-token\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - webhookevent\n      exporters:\n        - file\n"
   },
   {
     "id": "level-53",
@@ -2428,7 +3475,8 @@ export const challenges: Challenge[] = [
         "include": "/var/log/otlp/logs.json",
         "start_at": "beginning"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  otlpjsonfile:\n    include: /var/log/otlp/logs.json\n    start_at: beginning\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlpjsonfile\n      exporters:\n        - file\n"
   },
   {
     "id": "level-54",
@@ -2457,7 +3505,8 @@ export const challenges: Challenge[] = [
         "start_at": "beginning",
         "collection_interval": "10s"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  otlpjsonfile:\n    include: /var/log/otlp/logs.json\n    start_at: beginning\n    collection_interval: 10s\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - otlpjsonfile\n      exporters:\n        - file\n"
   },
   {
     "id": "level-55",
@@ -2503,7 +3552,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    operators:\n      - type: regex_parser\n        regex: ^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?P<severity>\\w+) (?P<message>.*)$\n        parse_from: body\n        parse_to: attributes\n        timestamp:\n          parse_from: attributes.timestamp\n          layout: '%Y-%m-%d %H:%M:%S'\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-56",
@@ -2550,7 +3600,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    operators:\n      - type: regex_parser\n        regex: ^(?P<sev>\\w+) (?P<msg>.*)$\n        parse_from: body\n        parse_to: attributes\n        severity:\n          parse_from: attributes.sev\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-57",
@@ -2583,7 +3634,8 @@ export const challenges: Challenge[] = [
         "start_at": "beginning",
         "compression": "gzip"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log.gz\n    start_at: beginning\n    compression: gzip\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-58",
@@ -2631,7 +3683,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  filelog:\n    include:\n      - /var/log/app.log\n    start_at: beginning\n    header:\n      pattern: ^#.*$\n      metadata_operators:\n        - type: regex_parser\n          regex: '^# (?P<key>\\w+): (?P<value>.*)$'\n          parse_from: body\n          parse_to: attributes\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - file\n"
   },
   {
     "id": "level-59",
@@ -2660,7 +3713,8 @@ export const challenges: Challenge[] = [
       "googlecloud": {
         "project_id": "my-gcp-project"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  googlecloud:\n    project_id: my-gcp-project\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - googlecloud\n"
   },
   {
     "id": "level-60",
@@ -2689,7 +3743,8 @@ export const challenges: Challenge[] = [
       "azuremonitor": {
         "instrumentation_key": "abc-123-def-456"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  azuremonitor:\n    instrumentation_key: abc-123-def-456\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - azuremonitor\n"
   },
   {
     "id": "level-61",
@@ -2725,7 +3780,8 @@ export const challenges: Challenge[] = [
         "topic": "logs-topic",
         "encoding": "otlp_proto"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: logs-topic\n    encoding: otlp_proto\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - kafka\n"
   },
   {
     "id": "level-62",
@@ -2766,7 +3822,8 @@ export const challenges: Challenge[] = [
         ],
         "partitioner": "hash"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: logs-topic\n    encoding: otlp_proto\n    partition_logs_by_resource_attributes:\n      - service.name\n    partitioner: hash\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - kafka\n"
   },
   {
     "id": "level-63",
@@ -2800,7 +3857,8 @@ export const challenges: Challenge[] = [
         "endpoint": "https://splunk-instance:8088",
         "sourcetype": "otel_logs"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  splunk_hec:\n    token: abc123-token\n    endpoint: https://splunk-instance:8088\n    sourcetype: otel_logs\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - splunk_hec\n"
   },
   {
     "id": "level-64",
@@ -2837,7 +3895,8 @@ export const challenges: Challenge[] = [
           "environment"
         ]
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  splunk_hec:\n    token: abc123-token\n    endpoint: https://splunk-instance:8088\n    sourcetype: otel_logs\n    index: main\n    otel_attrs_to_hec_metadata:\n      - environment\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - splunk_hec\n"
   },
   {
     "id": "level-65",
@@ -2869,7 +3928,8 @@ export const challenges: Challenge[] = [
         "endpoint": "https://es-cluster:9200",
         "api_key": "base64encodedkey=="
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  elasticsearch:\n    endpoint: https://es-cluster:9200\n    api_key: base64encodedkey==\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - elasticsearch\n"
   },
   {
     "id": "level-66",
@@ -2903,7 +3963,8 @@ export const challenges: Challenge[] = [
           "mode": "bodymap"
         }
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  elasticsearch:\n    mapping:\n      mode: bodymap\n    endpoint: https://es-cluster:9200\n    api_key: base64encodedkey==\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - filelog\n      exporters:\n        - elasticsearch\n"
   },
   {
     "id": "level-67",
@@ -2939,7 +4000,8 @@ export const challenges: Challenge[] = [
         "topic": "logs-topic",
         "encoding": "raw"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic: logs-topic\n    encoding: raw\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - kafka\n      exporters:\n        - file\n"
   },
   {
     "id": "level-68",
@@ -2977,7 +4039,8 @@ export const challenges: Challenge[] = [
         ],
         "encoding": "raw"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  kafka:\n    brokers:\n      - kafka-broker:9092\n    topic_regex: app-logs-.*\n    exclude_topics:\n      - app-logs-ignore-.*\n    encoding: raw\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - kafka\n      exporters:\n        - file\n"
   },
   {
     "id": "level-69",
@@ -3012,7 +4075,8 @@ export const challenges: Challenge[] = [
           "env"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  resourcedetection:\n    detectors:\n      - env\nservice:\n  pipelines:\n    logs:\n      processors:\n        - resourcedetection\n"
   },
   {
     "id": "level-70",
@@ -3050,7 +4114,8 @@ export const challenges: Challenge[] = [
         ],
         "override": false
       }
-    }
+    },
+    "solutionYaml": "processors:\n  resourcedetection:\n    detectors:\n      - env\n      - gcp\n      - ec2\n    override: false\nservice:\n  pipelines:\n    logs:\n      processors:\n        - resourcedetection\n"
   },
   {
     "id": "level-71",
@@ -3085,7 +4150,8 @@ export const challenges: Challenge[] = [
           "service.name"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  groupbyattrs:\n    keys:\n      - service.name\nservice:\n  pipelines:\n    logs:\n      processors:\n        - groupbyattrs\n"
   },
   {
     "id": "level-72",
@@ -3118,7 +4184,8 @@ export const challenges: Challenge[] = [
       "groupbyattrs": {
         "keys": []
       }
-    }
+    },
+    "solutionYaml": "processors:\n  groupbyattrs:\n    keys: []\nservice:\n  pipelines:\n    logs:\n      processors:\n        - groupbyattrs\n"
   },
   {
     "id": "level-73",
@@ -3153,7 +4220,8 @@ export const challenges: Challenge[] = [
       "probabilistic_sampler": {
         "sampling_percentage": 25
       }
-    }
+    },
+    "solutionYaml": "processors:\n  probabilistic_sampler:\n    sampling_percentage: 25\nservice:\n  pipelines:\n    logs:\n      processors:\n        - probabilistic_sampler\n"
   },
   {
     "id": "level-74",
@@ -3190,7 +4258,8 @@ export const challenges: Challenge[] = [
         "sampling_percentage": 10,
         "sampling_priority": 5
       }
-    }
+    },
+    "solutionYaml": "processors:\n  probabilistic_sampler:\n    sampling_percentage: 10\n    sampling_priority: 5\nservice:\n  pipelines:\n    logs:\n      processors:\n        - probabilistic_sampler\n"
   },
   {
     "id": "level-75",
@@ -3223,7 +4292,8 @@ export const challenges: Challenge[] = [
           "cpu": null
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      cpu: null\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - file\n"
   },
   {
     "id": "level-76",
@@ -3256,7 +4326,8 @@ export const challenges: Challenge[] = [
           "filesystem": null
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      disk: null\n      filesystem: null\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - file\n"
   },
   {
     "id": "level-77",
@@ -3295,7 +4366,8 @@ export const challenges: Challenge[] = [
           }
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    scrapers:\n      network:\n        include:\n          devices:\n            - eth0\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - file\n"
   },
   {
     "id": "level-78",
@@ -3330,7 +4402,8 @@ export const challenges: Challenge[] = [
           "disk": null
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  hostmetrics:\n    collection_interval: 10s\n    scrapers:\n      cpu: null\n      memory: null\n      disk: null\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - file\n"
   },
   {
     "id": "level-79",
@@ -3375,7 +4448,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: collector\n          static_configs:\n            - targets:\n                - localhost:9090\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - prometheus\n      exporters:\n        - file\n"
   },
   {
     "id": "level-80",
@@ -3430,7 +4504,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: app\n          static_configs:\n            - targets:\n                - app:8080\n        - job_name: otel-collector\n          static_configs:\n            - targets:\n                - collector:9090\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - prometheus\n      exporters:\n        - file\n"
   },
   {
     "id": "level-81",
@@ -3477,7 +4552,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: secure-app\n          scheme: https\n          tls_config:\n            insecure_skip_verify: true\n          static_configs:\n            - targets:\n                - internal-metrics:9090\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - prometheus\n      exporters:\n        - file\n"
   },
   {
     "id": "level-82",
@@ -3511,7 +4587,8 @@ export const challenges: Challenge[] = [
         "username": "otel",
         "password": ""
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  mysql:\n    endpoint: localhost:3306\n    username: otel\n    password: ''\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - mysql\n      exporters:\n        - file\n"
   },
   {
     "id": "level-83",
@@ -3545,7 +4622,8 @@ export const challenges: Challenge[] = [
         "password": "",
         "collection_interval": "10s"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  redis:\n    endpoint: localhost:6379\n    password: ''\n    collection_interval: 10s\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - redis\n      exporters:\n        - file\n"
   },
   {
     "id": "level-84",
@@ -3580,7 +4658,8 @@ export const challenges: Challenge[] = [
         ],
         "collection_interval": "30s"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  httpcheck:\n    targets:\n      - https://example.com\n      - https://status.example.com\n    collection_interval: 30s\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - httpcheck\n      exporters:\n        - file\n"
   },
   {
     "id": "level-85",
@@ -3614,7 +4693,8 @@ export const challenges: Challenge[] = [
         "auth_type": "serviceAccount",
         "collection_interval": "30s"
       }
-    }
+    },
+    "solutionYaml": "receivers:\n  kubeletstats:\n    endpoint: http://kubelet:10250\n    auth_type: serviceAccount\n    collection_interval: 30s\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - kubeletstats\n      exporters:\n        - file\n"
   },
   {
     "id": "level-86",
@@ -3653,7 +4733,8 @@ export const challenges: Challenge[] = [
           }
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  filter:\n    metrics:\n      include:\n        match_type: regexp\n        metric_names:\n          - cpu.*\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-87",
@@ -3695,7 +4776,8 @@ export const challenges: Challenge[] = [
           }
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  filter:\n    metrics:\n      include:\n        match_type: strict\n        resource_attributes:\n          - key: environment\n            value: production\nservice:\n  pipelines:\n    logs:\n      processors:\n        - filter\n"
   },
   {
     "id": "level-88",
@@ -3725,7 +4807,8 @@ export const challenges: Challenge[] = [
     "starterYaml": "processors:\n  cumulativetodelta:\n\nservice:\n  pipelines:\n    logs:\n      processors: [cumulativetodelta]\n",
     "solutionProcessors": {
       "cumulativetodelta": null
-    }
+    },
+    "solutionYaml": "processors:\n  cumulativetodelta: null\nservice:\n  pipelines:\n    logs:\n      processors:\n        - cumulativetodelta\n"
   },
   {
     "id": "level-89",
@@ -3763,7 +4846,8 @@ export const challenges: Challenge[] = [
           ]
         }
       }
-    }
+    },
+    "solutionYaml": "processors:\n  cumulativetodelta:\n    include:\n      match_type: regexp\n      metric_names:\n        - system.cpu.*\nservice:\n  pipelines:\n    logs:\n      processors:\n        - cumulativetodelta\n"
   },
   {
     "id": "level-90",
@@ -3793,7 +4877,8 @@ export const challenges: Challenge[] = [
     "starterYaml": "processors:\n  deltatorate:\n\nservice:\n  pipelines:\n    logs:\n      processors: [deltatorate]\n",
     "solutionProcessors": {
       "deltatorate": null
-    }
+    },
+    "solutionYaml": "processors:\n  deltatorate: null\nservice:\n  pipelines:\n    logs:\n      processors:\n        - deltatorate\n"
   },
   {
     "id": "level-91",
@@ -3824,7 +4909,8 @@ export const challenges: Challenge[] = [
       "deltatorate": {
         "addition_label": "host"
       }
-    }
+    },
+    "solutionYaml": "processors:\n  deltatorate:\n    addition_label: host\nservice:\n  pipelines:\n    logs:\n      processors:\n        - deltatorate\n"
   },
   {
     "id": "level-92",
@@ -3861,7 +4947,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    metric_statements:\n      - context: metric\n        statements:\n          - set(metric.name, \"new.metric.name\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-93",
@@ -3898,7 +4985,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    metric_statements:\n      - context: metric\n        statements:\n          - set(metric.description, \"Custom metric description\")\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-94",
@@ -3936,7 +5024,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    metric_statements:\n      - context: metric\n        statements:\n          - keep_keys(data_point.attributes, [\"host\", \"dc\"])\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-95",
@@ -3974,7 +5063,8 @@ export const challenges: Challenge[] = [
           }
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  transform:\n    metric_statements:\n      - context: metric\n        statements:\n          - scale_metric(0.001)\nservice:\n  pipelines:\n    logs:\n      processors:\n        - transform\n"
   },
   {
     "id": "level-96",
@@ -4009,7 +5099,8 @@ export const challenges: Challenge[] = [
           "host.name"
         ]
       }
-    }
+    },
+    "solutionYaml": "processors:\n  groupbyattrs:\n    keys:\n      - host.name\nservice:\n  pipelines:\n    logs:\n      processors:\n        - groupbyattrs\n"
   },
   {
     "id": "level-97",
@@ -4042,7 +5133,8 @@ export const challenges: Challenge[] = [
       "groupbyattrs": {
         "keys": []
       }
-    }
+    },
+    "solutionYaml": "processors:\n  groupbyattrs:\n    keys: []\nservice:\n  pipelines:\n    logs:\n      processors:\n        - groupbyattrs\n"
   },
   {
     "id": "level-98",
@@ -4070,7 +5162,8 @@ export const challenges: Challenge[] = [
       "prometheus": {
         "endpoint": "0.0.0.0:8889"
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  prometheus:\n    endpoint: 0.0.0.0:8889\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheus\n"
   },
   {
     "id": "level-99",
@@ -4103,6 +5196,7 @@ export const challenges: Challenge[] = [
           "team": "platform"
         }
       }
-    }
+    },
+    "solutionYaml": "exporters:\n  prometheus:\n    const_labels:\n      environment: production\n      team: platform\n    endpoint: 0.0.0.0:8889\nservice:\n  pipelines:\n    logs:\n      receivers:\n        - hostmetrics\n      exporters:\n        - prometheus\n"
   }
 ] as Challenge[];

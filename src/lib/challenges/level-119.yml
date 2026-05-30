@@ -1,0 +1,39 @@
+id: level-119
+title: Filter by Status
+description: "Only keep traces with successful HTTP responses. Configure the **filter** processor on the traces pipeline to drop spans where `span.status.code` is not equal to `OK`."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"OK span passed filter","attributes":{"processor":"filter","status":"OK"}}'
+  - '{"body":"Another OK span","attributes":{"processor":"filter","status":"OK"}}'
+
+expectedBodies:
+  - "OK span passed filter"
+  - "Another OK span"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the `filter` processor with `traces` section"
+  - "Use `span` context for conditions"
+  - "Set `span.status.code != OK` to drop non-OK spans"
+
+starterYaml: |
+  processors:
+    filter:
+      traces:
+        span:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    traces:
+      span:
+        - 'span.status.code != OK'

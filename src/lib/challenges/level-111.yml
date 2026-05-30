@@ -1,0 +1,41 @@
+id: level-111
+title: Kafka Consume
+description: "Ingest traces from a Kafka topic. Configure the **kafka receiver** to consume trace data from the `traces` topic on `kafka-broker:9092` using `otlp_proto` encoding."
+difficulty: medium
+category: trace-receiver
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Consumed trace from kafka topic","attributes":{"receiver":"kafka","topic":"traces","signal":"traces"}}'
+  - '{"body":"Another trace message from kafka","attributes":{"receiver":"kafka","topic":"traces","signal":"traces"}}'
+
+expectedBodies:
+  - "Consumed trace from kafka topic"
+  - "Another trace message from kafka"
+
+requiredReceivers:
+  - kafka
+
+hints:
+  - "Add a `receivers` section with a `kafka` receiver"
+  - "Set `brokers` to a list containing `kafka-broker:9092`"
+  - "Set `topic` to `traces`"
+  - "Set `encoding` to `otlp_proto`"
+  - "Wire into the pipeline receivers"
+
+starterYaml: |
+  receivers:
+    kafka:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [kafka]
+        exporters: [file]
+
+solutionReceivers:
+  kafka:
+    brokers:
+      - kafka-broker:9092
+    topic: traces
+    encoding: otlp_proto

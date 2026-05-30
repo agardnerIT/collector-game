@@ -1,0 +1,34 @@
+id: level-122
+title: Resource Detection
+description: "Enrich trace spans with environment metadata using the **resourcedetection** processor. Configure it to detect the environment using the `env` detector, which reads `OTEL_RESOURCE_ATTRIBUTES`."
+difficulty: easy
+category: trace-processor
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Span enriched with resource attributes","attributes":{"processor":"resourcedetection","detector":"env","signal":"traces"}}'
+
+expectedBodies:
+  - "Span enriched with resource attributes"
+
+requiredProcessors:
+  - resourcedetection
+
+hints:
+  - "Add a `resourcedetection` processor"
+  - "Set `detectors` to a list containing `env`"
+  - "The `env` detector reads `OTEL_RESOURCE_ATTRIBUTES` from the environment"
+
+starterYaml: |
+  processors:
+    resourcedetection:
+
+  service:
+    pipelines:
+      logs:
+        processors: [resourcedetection]
+
+solutionProcessors:
+  resourcedetection:
+    detectors:
+      - env

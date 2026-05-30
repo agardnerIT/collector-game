@@ -1,0 +1,37 @@
+id: level-126
+title: GCP Trace
+description: "Export traces to Google Cloud Trace. Configure the **googlecloud** exporter with `project_id: my-project` and the `trace` service to send spans to GCP."
+difficulty: medium
+category: trace-exporter
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Trace exported to GCP Cloud Trace","attributes":{"exporter":"googlecloud","project":"my-project","service":"trace"}}'
+  - '{"body":"Another trace sent to GCP","attributes":{"exporter":"googlecloud","project":"my-project","service":"trace"}}'
+
+expectedBodies:
+  - "Trace exported to GCP Cloud Trace"
+  - "Another trace sent to GCP"
+
+requiredExporters:
+  - googlecloud
+
+hints:
+  - "Add a `googlecloud` exporter to the `exporters` section"
+  - "Set `project_id` to `my-project`"
+  - "The exporter handles auth via ADC (Application Default Credentials)"
+  - "Wire it into the pipeline exporters"
+
+starterYaml: |
+  exporters:
+    googlecloud:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: [googlecloud]
+
+solutionExporters:
+  googlecloud:
+    project_id: my-project

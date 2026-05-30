@@ -1,0 +1,72 @@
+id: level-129
+title: Full Trace Pipeline
+description: "Build a complete trace pipeline. Configure `otlp` receiver → `batch` processor → `tail_sampling` processor (keep status >= 400) → `otlp` exporter. This is a production-ready trace processing pipeline."
+difficulty: medium
+category: trace-pipeline
+basePoints: 300
+
+inputLogs:
+  - '{"body":"Trace processed through full pipeline","attributes":{"pipeline":"trace","receivers":["otlp"],"processors":["batch","tail_sampling"],"exporters":["otlp"]}}'
+  - '{"body":"Another trace through the pipeline","attributes":{"pipeline":"trace","receivers":["otlp"],"processors":["batch","tail_sampling"],"exporters":["otlp"]}}'
+
+expectedBodies:
+  - "Trace processed through full pipeline"
+  - "Another trace through the pipeline"
+
+requiredReceivers:
+  - otlp
+
+requiredProcessors:
+  - batch
+  - tail_sampling
+
+requiredExporters:
+  - otlp
+
+hints:
+  - "Add `otlp` receiver with gRPC protocol"
+  - "Add `batch` processor with timeout and batch size"
+  - "Add `tail_sampling` with `numeric_attribute` policy on `http.status_code` (min 400)"
+  - "Add `otlp` exporter to send to backend"
+  - "Wire all four together in the pipeline"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+  processors:
+    batch:
+    tail_sampling:
+      policies:
+
+  exporters:
+    otlp:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        processors: []
+        exporters: [otlp]
+
+solutionReceivers:
+  otlp:
+    protocols:
+      grpc:
+
+solutionProcessors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+  tail_sampling:
+    policies:
+      - type: numeric_attribute
+        config:
+          key: http.status_code
+          min_value: 400
+
+solutionExporters:
+  otlp:
+    endpoint: https://traces-backend:4317

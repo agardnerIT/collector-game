@@ -1,0 +1,39 @@
+id: level-124
+title: Filter by Error
+description: "Keep only error spans for focused observability. Configure the **filter** processor to only keep spans where `span.status.code == ERROR`, dropping all successful spans."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"ERROR span: database connection failed","attributes":{"processor":"filter","status":"ERROR"}}'
+  - '{"body":"ERROR span: payment declined","attributes":{"processor":"filter","status":"ERROR"}}'
+
+expectedBodies:
+  - "ERROR span: database connection failed"
+  - "ERROR span: payment declined"
+
+requiredProcessors:
+  - filter
+
+hints:
+  - "Use the `filter` processor with `traces` section"
+  - "Use `span` context with `span.status.code == ERROR`"
+  - "Only error spans will pass through"
+
+starterYaml: |
+  processors:
+    filter:
+      traces:
+        span:
+
+  service:
+    pipelines:
+      logs:
+        processors: [filter]
+
+solutionProcessors:
+  filter:
+    traces:
+      span:
+        - 'span.status.code == ERROR'

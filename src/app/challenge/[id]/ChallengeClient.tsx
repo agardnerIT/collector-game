@@ -43,6 +43,9 @@ export default function ChallengeClient({
     completeLevel,
     resetLevel,
     streak,
+    revealAnswer,
+    isAnswerRevealed,
+    revealedAnswers,
   } = useGameState();
 
   const [yaml, setYaml] = useState("");
@@ -63,6 +66,7 @@ export default function ChallengeClient({
   const [showFeedback, setShowFeedback] = useState(false);
   const [lockedMessage, setLockedMessage] = useState(false);
   const [tutorial, setTutorial] = useState(0);
+  const [showRevealConfirm, setShowRevealConfirm] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const validateRef = useRef<HTMLDivElement>(null);
 
@@ -140,8 +144,9 @@ export default function ChallengeClient({
 
       if (data.correct) {
         const hintsUsed = getHintsUsed(challenge.id);
-        const { total } = calculateScore(challenge.basePoints, hintsUsed, streak);
-        setResult((prev) => prev ? { ...prev, scoreEarned: total } : prev);
+        const hasRevealed = revealedAnswers.includes(challenge.id);
+        const scoreEarned = hasRevealed ? 0 : calculateScore(challenge.basePoints, hintsUsed, streak).total;
+        setResult((prev) => prev ? { ...prev, scoreEarned } : prev);
         completeLevel(challenge.id, hintsUsed, challenge.basePoints);
       } else {
         resetLevel(challenge.id);
@@ -159,7 +164,7 @@ export default function ChallengeClient({
     } finally {
       setLoading(false);
     }
-  }, [challenge, loading, yaml, completeLevel, resetLevel, getHintsUsed, tutorial]);
+  }, [challenge, loading, yaml, completeLevel, resetLevel, getHintsUsed, tutorial, revealedAnswers]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -413,6 +418,54 @@ export default function ChallengeClient({
                 Show hint <span className="text-candy-pink">(-10 pts)</span>
               </button>
             )}
+
+            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+              {showRevealConfirm ? (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center max-w-xs">
+                    This will fill in the correct answer and mark the challenge as completed. You'll earn <span className="text-candy-pink font-bold">0 points</span>.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (!challenge?.solutionYaml) return;
+                        setYaml(challenge.solutionYaml);
+                        revealAnswer(challenge.id);
+                        setShowRevealConfirm(false);
+                        playSound("click");
+                      }}
+                      className="px-4 py-1.5 rounded-full text-xs font-bold bg-candy-pink/10 text-candy-pink hover:bg-candy-pink/20 transition-colors"
+                    >
+                      Yes, Show Answer
+                    </button>
+                    <button
+                      onClick={() => setShowRevealConfirm(false)}
+                      className="px-4 py-1.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                !isAnswerRevealed(challenge.id) && (
+                  <button
+                    onClick={() => setShowRevealConfirm(true)}
+                    className="text-xs font-bold text-gray-300 dark:text-gray-600 hover:text-gray-400 dark:hover:text-gray-500 transition-colors"
+                  >
+                    Show Answer (0 pts)
+                  </button>
+                )
+              )}
+              {isAnswerRevealed(challenge.id) && (
+                <p className="text-xs text-gray-300 dark:text-gray-600 text-center">
+                  Answer revealed. Validate to complete (0 pts).
+                </p>
+              )}
+            </div>
           </div>
         </motion.div>
 

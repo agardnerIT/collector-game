@@ -1,0 +1,39 @@
+id: level-118
+title: Insert Span Attribute
+description: "Enrich spans with a new attribute. Use the **attributes** processor to `insert` an `environment` attribute set to `production` on every span passing through the pipeline."
+difficulty: easy
+category: trace-processor
+basePoints: 120
+
+inputLogs:
+  - '{"body":"Span enriched with environment attribute","attributes":{"processor":"attributes","action":"insert","key":"environment","value":"production"}}'
+  - '{"body":"Another span enriched","attributes":{"processor":"attributes","action":"insert","key":"environment","value":"production"}}'
+
+expectedBodies:
+  - "Span enriched with environment attribute"
+  - "Another span enriched"
+
+requiredProcessors:
+  - attributes
+
+hints:
+  - "Use the `attributes` processor"
+  - "Add an action with `action: insert`"
+  - "Set `key` to `environment` and `value` to `production`"
+
+starterYaml: |
+  processors:
+    attributes:
+      actions:
+
+  service:
+    pipelines:
+      logs:
+        processors: [attributes]
+
+solutionProcessors:
+  attributes:
+    actions:
+      - key: environment
+        value: production
+        action: insert

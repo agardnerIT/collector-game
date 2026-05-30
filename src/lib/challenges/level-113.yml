@@ -1,0 +1,37 @@
+id: level-113
+title: Memory Limiter
+description: "Protect the Collector from memory exhaustion when processing traces. Configure the **memory_limiter** processor to check every **5 seconds** and enforce a hard limit of **512 MiB**."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Memory usage below limit","attributes":{"processor":"memory_limiter","limit_mib":512,"check_interval":"5s"}}'
+  - '{"body":"High memory but within threshold","attributes":{"processor":"memory_limiter","limit_mib":512,"check_interval":"5s"}}'
+
+expectedBodies:
+  - "Memory usage below limit"
+  - "High memory but within threshold"
+
+requiredProcessors:
+  - memory_limiter
+
+hints:
+  - "Add a `memory_limiter` processor to the `processors` section"
+  - "Set `check_interval` to `5s`"
+  - "Set `limit_mib` to `512`"
+  - "Wire it into the pipeline processors"
+
+starterYaml: |
+  processors:
+    memory_limiter:
+
+  service:
+    pipelines:
+      logs:
+        processors: [memory_limiter]
+
+solutionProcessors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512

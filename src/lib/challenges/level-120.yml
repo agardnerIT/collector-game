@@ -1,0 +1,41 @@
+id: level-120
+title: Rename via OTTL
+description: "Use the **transform** processor with OTTL to rename spans. Set `span.name` to a new value `\"processed-span\"` for every span in the pipeline using the `set` function."
+difficulty: medium
+category: trace-processor
+basePoints: 200
+
+inputLogs:
+  - '{"body":"Original span name was /api/users","attributes":{"processor":"transform","original":"/api/users","new":"processed-span"}}'
+  - '{"body":"Original span name was /api/orders","attributes":{"processor":"transform","original":"/api/orders","new":"processed-span"}}'
+
+expectedBodies:
+  - "Original span name was /api/users"
+  - "Original span name was /api/orders"
+
+requiredProcessors:
+  - transform
+
+hints:
+  - "Use the `transform` processor with `trace_statements`"
+  - "Set `context` to `span`"
+  - "Use `set(span.name, \"processed-span\")`"
+
+starterYaml: |
+  processors:
+    transform:
+      trace_statements:
+        - context: span
+          statements:
+
+  service:
+    pipelines:
+      logs:
+        processors: [transform]
+
+solutionProcessors:
+  transform:
+    trace_statements:
+      - context: span
+        statements:
+          - 'set(span.name, "processed-span")'

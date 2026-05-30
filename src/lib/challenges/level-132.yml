@@ -1,0 +1,84 @@
+id: level-132
+title: Logs + Metrics + Traces
+description: "Run all three signal pipelines in a single Collector config. Configure **filelog** (logs) → **file** exporter, **hostmetrics** (metrics) → **prometheus** exporter, and **otlp** (traces) → **otlp** exporter. Each signal gets its own pipeline."
+difficulty: hard
+category: trace-pipeline
+basePoints: 500
+
+inputLogs:
+  - '{"body":"Log entry from filelog receiver","attributes":{"signal":"logs"}}'
+  - '{"body":"hostmetrics cpu 0.5","attributes":{"signal":"metrics","metric":"cpu"}}'
+  - '{"body":"Trace span from otlp receiver","attributes":{"signal":"traces","trace_id":"abc123"}}'
+
+expectedBodies:
+  - "Log entry from filelog receiver"
+  - "hostmetrics cpu 0.5"
+  - "Trace span from otlp receiver"
+
+hints:
+  - "Add three receivers: `filelog`, `hostmetrics`, `otlp`"
+  - "Add three exporters: `file`, `prometheus`, `otlp`"
+  - "Create three pipelines under `service.pipelines`: `logs`, `metrics`, `traces`"
+  - "Each pipeline wires its corresponding receiver to its exporter"
+
+starterYaml: |
+  receivers:
+    filelog:
+      include: [/var/log/app.log]
+      start_at: beginning
+      operators:
+        - type: json_parser
+    hostmetrics:
+      scrapers:
+        cpu:
+    otlp:
+      protocols:
+        grpc:
+
+  exporters:
+    file:
+      path: ./output.json
+    prometheus:
+    otlp:
+
+  service:
+    pipelines:
+
+solutionReceivers:
+  filelog:
+    include:
+      - /var/log/app.log
+    start_at: beginning
+    operators:
+      - type: json_parser
+  hostmetrics:
+    scrapers:
+      cpu:
+  otlp:
+    protocols:
+      grpc:
+
+solutionExporters:
+  file:
+    path: ./output.json
+  prometheus:
+    endpoint: 0.0.0.0:8889
+  otlp:
+    endpoint: https://traces-backend:4317
+
+solutionPipelines:
+  logs:
+    receivers:
+      - filelog
+    exporters:
+      - file
+  metrics:
+    receivers:
+      - hostmetrics
+    exporters:
+      - prometheus
+  traces:
+    receivers:
+      - otlp
+    exporters:
+      - otlp

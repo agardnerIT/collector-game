@@ -1,0 +1,41 @@
+id: level-116
+title: Tail Numeric Attribute
+description: "Sample traces based on an attribute value. Configure the **tail_sampling** processor to keep only traces where `http.status_code >= 400` (client and server errors), dropping successful requests."
+difficulty: medium
+category: trace-processor
+basePoints: 250
+
+inputLogs:
+  - '{"body":"Trace kept for status 500","attributes":{"processor":"tail_sampling","policy":"numeric_attribute","key":"http.status_code","min_val":400}}'
+  - '{"body":"Trace kept for status 404","attributes":{"processor":"tail_sampling","policy":"numeric_attribute","key":"http.status_code","min_val":400}}'
+
+expectedBodies:
+  - "Trace kept for status 500"
+  - "Trace kept for status 404"
+
+requiredProcessors:
+  - tail_sampling
+
+hints:
+  - "Add a `tail_sampling` processor with a `numeric_attribute` policy"
+  - "Set `key` to `http.status_code`"
+  - "Set `min_value` to `400`"
+  - "Traces with status_code >= 400 are kept"
+
+starterYaml: |
+  processors:
+    tail_sampling:
+      policies:
+
+  service:
+    pipelines:
+      logs:
+        processors: [tail_sampling]
+
+solutionProcessors:
+  tail_sampling:
+    policies:
+      - type: numeric_attribute
+        config:
+          key: http.status_code
+          min_value: 400

@@ -1,0 +1,38 @@
+id: level-109
+title: OTLP HTTP
+description: "In addition to gRPC, the OTLP receiver can accept traces over HTTP. Enable the HTTP protocol on port `4318` so applications that can't use gRPC can still send traces."
+difficulty: easy
+category: trace-receiver
+basePoints: 100
+
+inputLogs:
+  - '{"body":"Received trace via HTTP on port 4318","attributes":{"receiver":"otlp","protocol":"http","signal":"traces"}}'
+
+expectedBodies:
+  - "Received trace via HTTP on port 4318"
+
+requiredReceivers:
+  - otlp
+
+hints:
+  - "Add an `otlp` receiver with `protocols` section"
+  - "Enable `http` protocol — it listens on port 4318 by default"
+  - "Wire into the pipeline receivers"
+
+starterYaml: |
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+  service:
+    pipelines:
+      logs:
+        receivers: [otlp]
+        exporters: [file]
+
+solutionReceivers:
+  otlp:
+    protocols:
+      grpc:
+      http:

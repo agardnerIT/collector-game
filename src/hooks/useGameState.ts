@@ -20,7 +20,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: "hardcore", title: "Hardcore", description: "Complete all Hard challenges", icon: "🔴" },
   { id: "streak-master", title: "Streak Master", description: "Reach a streak of 10", icon: "🔥" },
   { id: "centurion", title: "Centurion", description: "Earn 1,000 total points", icon: "💯" },
-  { id: "completionist", title: "Completionist", description: "Complete all 74 challenges", icon: "🏆" },
+  { id: "completionist", title: "Completionist", description: "Complete all challenges", icon: "🏆" },
 ];
 
 interface GameState {
@@ -31,6 +31,7 @@ interface GameState {
   soundEnabled: boolean;
   earnedAchievements: string[];
   starterBonusCollected: boolean;
+  revealedAnswers: string[];
 
   completeLevel: (levelId: string, hintsUsedCount: number, basePoints: number) => void;
   resetLevel: (levelId: string) => void;
@@ -46,6 +47,8 @@ interface GameState {
   completedMediumCount: () => number;
   completedHardCount: () => number;
   checkAchievements: () => string[];
+  revealAnswer: (levelId: string) => void;
+  isAnswerRevealed: (levelId: string) => boolean;
 }
 
 export const useGameState = create<GameState>()(
@@ -58,10 +61,20 @@ export const useGameState = create<GameState>()(
       soundEnabled: true,
       earnedAchievements: [],
       starterBonusCollected: false,
+      revealedAnswers: [],
 
       completeLevel: (levelId, hintsUsedCount, basePoints) => {
         const state = get();
         if (state.completedLevels.includes(levelId)) return;
+
+        const isRevealed = state.revealedAnswers.includes(levelId);
+
+        if (isRevealed) {
+          set({
+            completedLevels: [...state.completedLevels, levelId],
+          });
+          return;
+        }
 
         const isStarter = levelId === "level-01" && !state.starterBonusCollected;
 
@@ -130,6 +143,16 @@ export const useGameState = create<GameState>()(
         }));
       },
 
+      revealAnswer: (levelId) => {
+        set((state) => ({
+          revealedAnswers: [...state.revealedAnswers, levelId],
+        }));
+      },
+
+      isAnswerRevealed: (levelId) => {
+        return get().revealedAnswers.includes(levelId);
+      },
+
       getLevel: () => {
         return get().completedLevels.length;
       },
@@ -150,6 +173,7 @@ export const useGameState = create<GameState>()(
           hintsUsed: {},
           earnedAchievements: [],
           starterBonusCollected: false,
+          revealedAnswers: [],
         });
       },
 
@@ -223,6 +247,7 @@ export const useGameState = create<GameState>()(
           soundEnabled: state.soundEnabled,
           earnedAchievements: state.earnedAchievements,
           starterBonusCollected: state.starterBonusCollected,
+          revealedAnswers: state.revealedAnswers,
         }) as GameState,
       onRehydrateStorage: () => {
         return (state) => {
